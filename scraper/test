@@ -1,0 +1,1620 @@
+<html>
+<head>
+<title>Savage 2 - A Tortured Soul</title>
+<script type="text/javascript" src="http://savage2.com/en/lightbox.js"></script>
+<script type="text/javascript" src="http://savage2.com/en/vote.js"></script>
+<link rel="stylesheet" href="lightbox.css" type="text/css">
+<link rel="stylesheet" href="http://savage2.com/en/s2v2.css" type="text/css">
+<script language="JavaScript">
+
+	function getPlayerMatchInfo(mid, aid)
+	{
+		var req = null;
+
+		document.getElementById("pspec").innerHTML = "Loading...";
+
+		if (window.XMLHttpRequest)
+		{
+ 			req = new XMLHttpRequest();
+			if (req.overrideMimeType)
+			{
+				req.overrideMimeType('text/xml');
+			}
+		}
+		else if (window.ActiveXObject)
+		{
+			try {
+				req = new ActiveXObject("Msxml2.XMLHTTP");
+			} catch (e)
+			{
+				try {
+					req = new ActiveXObject("Microsoft.XMLHTTP");
+				} catch (e) {}
+			}
+	        	}
+
+
+
+		req.onreadystatechange = function()
+		{
+			document.getElementById("pspec").innerHTML = "<div id=opaque><div id=loader><img src=images/loading.gif width=75 height=75><span class=g16><br><b>Loading Player<br>Stats...</b></span></div></div><div id=translucentbkg></div>";
+			if(req.readyState == 4)
+			{
+				if(req.status == 200)
+				{
+					document.getElementById("pspec").innerHTML  = req.responseText + " <div id=translucentbkg></div>";
+				}
+				else
+				{
+					document.getElementById("pspec").innerHTML="Error: returned status code " + req.status + " " + req.statusText;
+				}
+			}
+		};
+		req.open("GET", "get_player_match_stats.php?aid=" + aid + "&mid=" + mid, true);
+		req.send(null);
+	}
+
+
+	function getCommMatchInfo(mid, aid)
+	{
+		var req = null;
+
+		document.getElementById("pspec").innerHTML = "Loading...";
+
+		if (window.XMLHttpRequest)
+		{
+ 			req = new XMLHttpRequest();
+			if (req.overrideMimeType)
+			{
+				req.overrideMimeType('text/xml');
+			}
+		}
+		else if (window.ActiveXObject)
+		{
+			try {
+				req = new ActiveXObject("Msxml2.XMLHTTP");
+			} catch (e)
+			{
+				try {
+					req = new ActiveXObject("Microsoft.XMLHTTP");
+				} catch (e) {}
+			}
+	        	}
+
+
+
+		req.onreadystatechange = function()
+		{
+			document.getElementById("pspec").innerHTML = "<div id=opaqueComm><div id=loaderComm><img src=images/loading.gif width=75 height=75><span class=g16><br><b>Loading Player<br>Stats...</b></span></div></div><div id=translucentbkgComm></div>";
+			if(req.readyState == 4)
+			{
+				if(req.status == 200)
+				{
+					document.getElementById("pspec").innerHTML  = req.responseText + " <div id=translucentbkgComm></div>";
+				}
+				else
+				{
+					document.getElementById("pspec").innerHTML="Error: returned status code " + req.status + " " + req.statusText;
+				}
+			}
+		};
+		req.open("GET", "get_comm_match_stats.php?aid=" + aid + "&mid=" + mid, true);
+		req.send(null);
+	}
+
+function showIt(div){
+   if (document.getElementById) {  // for Netscape
+     myDiv = document.getElementById(div);
+        myDiv.style.display = 'block';
+   }
+
+   if (document.all) {     // for IE
+     eval("myDiv = "+div+";");
+        myDiv.style.display = 'block';
+   }
+}
+function hideIt(div){
+   if (document.getElementById) {  // for Netscape
+     myDiv = document.getElementById(div);
+        myDiv.style.display = 'none';
+   }
+
+   if (document.all) {     // for IE
+     eval("myDiv = "+div+";");
+        myDiv.style.display = 'none';
+   }
+}
+</script>
+
+<style type="text/css">
+#pspec {
+position: absolute;
+top:355px;
+left:50%;
+margin-left: -310px;
+z-index: 99;
+border: 1px solid #fbc641;
+}
+
+#translucentbkg {
+   width: 394px;
+   height: 532px;
+   background-color: #000;
+   filter:alpha(opacity=75);
+   -moz-opacity:0.75;
+   opacity: 0.75;
+   padding: 10px;
+}
+html>body #translucentbkg {
+width: 374px;
+height: 510px;
+}
+
+#translucentbkgComm {
+   width: 394px;
+   height: 413px;
+   background-color: #000;
+   filter:alpha(opacity=75);
+   -moz-opacity:0.75;
+   opacity: 0.75;
+   padding: 10px;
+}
+html>body #translucentbkgComm {
+width: 374px;
+height: 391px;
+}
+
+#opaque {
+   width: 394px;
+   height: 532px;
+   background-color: transparent;
+   position: absolute;
+   z-index: 100;
+   padding: 10px;
+}
+html>body #opaque {
+width: 374px;
+height: 510px;
+}
+
+#opaqueComm {
+   width: 394px;
+   height: 413px;
+   background-color: transparent;
+   position: absolute;
+   z-index: 100;
+   padding: 10px;
+}
+html>body #opaqueComm {
+width: 374px;
+height: 391px;
+}
+
+#ajax_topbar {
+position: relative;
+background:url(images/stattabs/bg.gif); border-bottom:1px solid #520405;
+font-family : Tahoma,Arial,Verdana;
+font-size : 12px;
+color: #000000;
+background-color: #520505;
+padding: 0 0 0 8px;
+}
+
+#loader {
+position: relative;
+text-align: center;
+top:200px;
+z-index: 100;
+}
+
+#loaderComm {
+position: relative;
+text-align: center;
+top:80px;
+z-index: 100;
+}
+
+#teamlists {
+font-family : Tahoma,Arial,Verdana;
+font-size : 12px;
+color: #FFFFFF;
+height: 546px;
+width: 169px;
+margin:0px;
+background-color: #000000;
+border: 1px solid #777067;
+}
+html>body #teamlists {
+width: 167px;
+height: 546px;
+}
+
+#tlist {
+width: 156px;
+height: 297px;
+overflow: auto;
+margin: 8px 0 8px 0;
+}
+
+#mlist {
+width: 162px;
+margin-top: 2px;
+}
+
+
+.comm_label  {
+height: 43px;
+width:93px;
+margin: 0px;
+text-align: center;
+background: url("images/mr_commander.gif") 0 0 no-repeat;
+font-family:Tahoma,Arial,Verdana,Helvetica,sans-serif; font-size:12px; color:#FFD774; text-decoration: none; font-weight: bold;
+}
+
+#teamcom a {
+display:block;
+height: 44px;
+width:95px;
+margin: 0px;
+text-align: center;
+background: url("images/mr_commander2.gif") 0 0 no-repeat;
+font-family:Tahoma,Arial,Verdana,Helvetica,sans-serif; font-size:10px; color:#FFD774; text-decoration: none; font-weight: bold;
+}
+
+#teamcom a:hover {
+background-position: -95px 0;
+}
+
+#match_voting {
+text-align: left;
+background-image: url(images/votback.jpg);
+background-repeat: no-repeat;
+background-color:#230a03;
+border: 1px solid #570000;
+padding: 2px;
+margin: 0 0 10px 0;
+font-family:Tahoma,Arial,Verdana,Helvetica,sans-serif; font-size:12px; color:#FFF9E9; text-decoration: none;
+}
+
+#match_voting p {
+margin: 2px;
+}
+
+
+
+</style>
+
+</head>
+
+
+<body bgcolor=#000000 leftmargin=0 topmargin=0 marginwidth=0 marginheight=0>
+<div id="GlobalToolTip"></div>
+<script type="text/javascript" src="http://savage2.com/en/globalpop.js"></script>
+
+<!-- Top Header -->
+<table border=0 cellpadding=0 cellspacing=0 align=center>
+	<tr>
+		<td><a href=http://savage2.com/en/main.php><img src=http://savage2.com/en/imagesv3/h1_ps.jpg width=350 height=186 border=0></a></td>
+		<td>
+		<table border=0 cellpadding=0 cellspacing=0>
+
+			<tr>
+				<td background=http://savage2.com/en/imagesv3/h2b.jpg width=283 height=48 align=center>
+				<table border=0 width=269 cellpadding=0 cellspacing=1 class=w10>
+                    
+                    <tr>
+                    	<td colspan=2>
+                    	<table border=0 cellpadding=0 cellspacing=0 class=my11 width=100%>
+                    		<tr>
+                    			<td><span class=w12><b>Logged in as:</span> Hurdy</b></td>
+
+                    			<td align=right valign=bottom><a href=/logout.php border=0><img src=http://savage2.com/en/images/minilogout.gif width=46 height=12 border=0></a></td>
+          					</tr>
+                    		<tr>
+                    			<td><div style="margin: 5px 0 0 5px;"><a href=http://savage2.com/en/user/acct_home.php class=my11>-Manage My Account-</a></div></td>
+                    			<td align=right></td>
+                    		</tr>
+          				</table>
+                    	</td>
+
+                    </tr>
+                    				</table>
+				</td>
+			</tr>
+			<tr>
+				<td><a href=http://savage2.com/en/main.php><img src=http://savage2.com/en/imagesv3/h3b.jpg width=283 height=138 border=0></a></td>
+			</tr>
+		</table>
+		</td>
+
+		<td><a href=http://savage2.com/en/main.php><img src=http://savage2.com/en/imagesv3/h4_ps.jpg width=367 height=186 border=0></a></td>
+	</tr>
+	<tr>
+		<td colspan=3>
+		<table border=0 cellpadding=0 cellspacing=0>
+			<tr>
+				<td><img src=http://savage2.com/en/images/ps_sep1.jpg width=645 height=34></td>
+				<td background=http://savage2.com/en/images/ps_mback.jpg width=289 height=34 align=right>
+				<table border=0 cellpadding=0 cellspacing=0>
+
+					<tr><form name="mn1" action="" method=post>
+						<td>
+						<select name="menu" class=selectpg>
+						<option value="http://savage2.com/en/player_stats.php">Jump To A Page...</option>
+						<option value="http://savage2.com/en/">Savage 2 Homepage</option>
+						<option value="http://savage2.com/en/player_ladder.php">Savage 2 Player Ladder</option>
+						<option value="http://www.savage2clans.com/clan_ladder.php">Savage 2 Clan Ladder</option>
+
+						<!--<option value="" disabled>Savage 2 Clan League</option>-->
+						</select>
+						</td>
+						<td><img src=http://savage2.com/en/images/spacer.gif width=4 height=1></td>
+						<td><input type=image src=http://savage2.com/en/images/bt_go.gif width=55 height=18 border=0></td>
+					</tr></form>
+				</table>
+				</td>
+				<td><img src=http://savage2.com/en/images/ps_sep2.jpg width=66 height=34></td>
+
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+<!-- Top Header -->
+
+<table border=0 cellpadding=0 cellspacing=0 align=center height=100% width=1000>
+	<tr>
+		<td background=http://savage2.com/en/images/ps_bg.jpg valign=top>
+		<table border=0 cellpadding=0 cellspacing=0 width=1000>
+
+			<tr>
+				<td width=52 valign=top><img src=http://savage2.com/en/images/ps_lt.gif width=52 height=30></td>
+				<td width=896 valign=top>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<td><img src=http://savage2.com/en/images/ps_mc1.jpg width=896 height=16></td>
+					</tr>
+					<tr>
+						<td>
+
+						<table border=0 cellpadding=0 cellspacing=0>
+
+							<tr>
+								<td valign=top width=537>
+
+								<!-- Left Col -->
+								<table border=0 cellpadding=0 cellspacing=0 class=w12>
+									<tr>
+										<td><img src=http://savage2.com/en/images/mr_fp1.gif width=153 height=36></td>
+										<td background=http://savage2.com/en/images/ps_fp2.jpg width=216 height=36 align=right>
+
+										<table border=0 cellpadding=0 cellspacing=0>
+											<tr><form action="match_replay.php" method="post">
+												<td><input type=text name="mid" class=search style="width: 132px"></td>
+												<td><img src=http://savage2.com/en/images/spacer.gif width=5 height=1></td>
+												<td><input type=image src=http://savage2.com/en/images/bt_search.gif width=64 height=18 border=0></td>
+											</tr> </form>
+										</table>
+										</td>
+
+										<td><img src=http://savage2.com/en/images/mr_fp3.jpg width=168 height=36></td>
+									</tr>
+									<tr>
+										<td colspan=3><img src=http://savage2.com/en/images/spacer.gif width=1 height=10></td>
+									</tr>
+									<tr>
+										<td colspan=3><img src=http://savage2.com/en/images/mrs1.gif width=537 height=10></td>
+									</tr>
+									<tr>
+
+										<td colspan=3 background=http://savage2.com/en/images/mrs2.gif bgcolor=#000000 width=537 align=center>
+										<!-- Start Prime -->
+										<table border=0 cellpadding=0 cellspacing=0 class=w12 width=520>
+											<tr>
+												<td>
+                                                    <span class=w16><b>Match ID: </b></span><span class=g16>197233</span>
+                                                </td>
+												<td align=right><b>Played: </b><span class=g12>01/20/10 15:10:14</span> &nbsp; <b>Duration: </b><span class=g12>00:26:31</span></td>
+
+											</tr>
+											<tr>
+												<td colspan=2><img src=http://savage2.com/en/images/spacer.gif height=10 width=2><br>
+												<table border=0 cellpadding=0 cellspacing=0 class=w11>
+													<tr>
+														<td valign=top align=center>
+														<img src="maps/eden.jpg" width=192 height=192 class=mtn><br>
+                                                        <b>Map Name:</b> <span class=my12>Eden</span><br />
+
+                                                        <img src=http://savage2.com/en/images/spacer.gif width=2 height=10>
+                                                        <table border=0 cellpadding=0 cellspacing=0 class=w12 bgcolor=#230a03>
+                                                                                                                    <tr>
+																<td colspan=2><a href="replay_dl.php?file=197233"><img src=http://savage2.com/en/images/mrbdl1.gif width=187 height=20 border=0></a></td>
+															</tr>
+															<tr>
+																<td width=55>
+                                                                    <a href="replay_dl.php?file=197233"><img src=http://savage2.com/en/images/mrbdl2.gif width=55 height=23 border=0></a>
+                                                                </td>
+
+                                                                <td width=132 align=center>00:26:31 - 3 Mb</td>
+															</tr>
+															<tr>
+																<td bgcolor=#000><span class=w10>&nbsp;</span></td>
+																<td align=center><span class=w10>( Downloads)</span><br></td>
+															</tr>
+                                                        														</table>
+
+														<div style="margin: 8px 0 20px; 0;">
+														<a href="#nogo" class=g10 style="cursor: default;" onMouseover="ddrivetip('To watch a replay, download the .s2r file available above. Save this file on your computer in the following directory:<br><br>\\My Documents\\Savage 2 - A Tortured Soul\\game\\replays\\ <br><br>Once saved, the replay will be available in the Replay Browser in the game. ', '', 340)"; onMouseout="hideddrivetip()">How Do I Watch A Replay?</a>
+
+														<noscript>
+														<span class=w10>Save replays in "\My Documents\Savage 2 - A Tortured Soul\game\replays\"</span><br>
+														</noscript>
+														</div>
+
+														<table border=0 cellpadding=0 cellspacing=0 class=w12>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrwinn1.gif width=187 height=19 border=0></td>
+
+															</tr>
+															<tr>
+																<td>
+																<div name="showlink" id="showlink" style="display: block;">
+																<table border=0 cellpadding=0 cellspacing=0 width=187 height=26>
+																	<tr>
+																		<td align=center><input type=submit name=null value="Show Winner" class=b12 onClick="showIt('winner');hideIt('showlink');"></td>
+																	</tr>
+																</table>
+
+																</div>
+
+																<div name="winner" id="winner" style="display: none;">
+																<table border=0 cellpadding=0 cellspacing=0 class=w16 width=187 height=26>
+																	<tr>
+																		<td align=center><b>Team 1</b></td>
+																	</tr>
+																</table>
+																</div>
+
+																</td>
+															</tr>
+														</table><img src=http://savage2.com/en/images/spacer.gif height=30 width=2><br>
+                                                        <!-- server -->
+                                                        <table border=0 cellpadding=0 cellspacing=0 class=w12>
+															<tr>
+																<td><img src=images/mrserver1.gif width=187 height=19 border=0></td>
+															</tr>
+
+															<tr>
+																<td align=center>
+                                                                ^gMaliken Intermediate                                                                </td>
+															</tr>
+														</table><img src=http://savage2.com/en/images/spacer.gif height=30 width=2><br>
+                                                        <!-- rating -->
+														<table border=0 cellpadding=0 cellspacing=0 class=w12>
+															<tr>
+
+																<td><img src=images/mrrated1.gif width=187 height=19 border=0></td>
+															</tr>
+															<tr>
+																<td align=center>
+                                                                                                                                        Not Yet Rated
+                                                                
+
+                                                                </td>
+															</tr>
+														</table><img src=http://savage2.com/en/images/spacer.gif height=30 width=2><br>
+
+														<table border=0 cellpadding=0 cellspacing=0 class=w12>
+
+                                                            <tr>
+																<td colspan=3><img src=http://savage2.com/en/images/mrrate1.gif width=187 height=19 border=0></td>
+															</tr>
+                                                        															<tr>   <form name=fm1 action=match_replay.php?mid=197233 method=post>
+																<td><input type=radio value=1 name=replayrank></td>
+																<td>Boring</td>
+																<td><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle></td>
+															</tr>
+
+															<tr>
+																<td><input type=radio value=2 name=replayrank></td>
+																<td>Mediocre</td>
+																<td><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle></td>
+															</tr>
+															<tr>
+																<td><input type=radio value=3 name=replayrank checked></td>
+																<td>Typical</td>
+
+																<td><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle></td>
+															</tr>
+															<tr>
+																<td><input type=radio value=4 name=replayrank></td>
+																<td>Thrilling</td>
+																<td><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle></td>
+															</tr>
+															<tr>
+
+																<td><input type=radio value=5 name=replayrank></td>
+																<td>Must See!</td>
+																<td><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle><img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle></td>
+															</tr>
+															<tr>
+																<td colspan=3 align=center><input type=submit value="Cast Vote" class=b12></td>
+															</tr></form>
+                                                        														</table>
+
+
+														</td>
+														<td><img src=http://savage2.com/en/images/spacer.gif width=13></td>
+														<td valign=top>
+
+                                                        <!-- Player Damage -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_dmg.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_dmg.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>6362</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>19087</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Kills -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_kls.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_kls.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>13</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>32</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Assists -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_assts.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_assts.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>4</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>20</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Souls -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_souls.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_souls.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>0</span> </td>
+																				<td width=50% class=mrstat bgcolor=#000000><b>Team 2: </b><span class=g11>0</span> </td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- HPs Healed -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_hphealed.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_hphealed.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>0</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>809</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Rezs -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_rez.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_rez.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>0</span> </td>
+																				<td width=50% class=mrstat bgcolor=#000000><b>Team 2: </b><span class=g11>0</span> </td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Gold -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_gold.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_gold.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>4545</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>15178</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Repaired -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_repaired.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_repaired.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>0</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>4734</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- NPC Kills -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_npc.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_npc.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>9</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>21</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Bld Damage -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_blddmg.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_blddmg.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>13018</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>34801</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Razed -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_razed.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_razed.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>4</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>5</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- Deaths -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_deaths.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_dealths.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 1: </b><span class=g11>19</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+																				<td width=50% class=mrstat bgcolor=#000000><b>Team 2: </b><span class=g11>33</span> </td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														<img src=http://savage2.com/en/images/spacer.gif height=6><br>
+														<!-- KD Ratio -->
+														<table border=0 cellpadding=0 cellspacing=0>
+															<tr>
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx1.gif width=308 height=6></td>
+
+															</tr>
+															<tr>
+																<td><img src=http://savage2.com/en/images/mrbx2.gif width=5 height=34></td>
+																<td><img src=http://savage2.com/en/images/mstats/icn_ratio.gif width=34 height=34></td>
+																<td><img src=http://savage2.com/en/images/mrbx3.gif width=6 height=34></td>
+																<td background=http://savage2.com/en/images/mrbx4.jpg width=259 height=34>
+																<table border=0 cellpadding=0 cellspacing=0>
+																	<tr>
+																		<td><img src=http://savage2.com/en/images/mstats/txt_ratio.gif height=17></td>
+
+																	</tr>
+																	<tr>
+																		<td>
+																		<table border=0 cellpadding=0 cellspacing=0 width=259 height=17>
+																			<tr>																				<td width=50% class=mrstat bgcolor=#000000><b>Team 1: </b><span class=g11>1:1.5</span> </td>
+																				<td width=50% class=mrstat bgcolor=#4e0707><b>Team 2: </b><span class=g11>1:1</span> <img src=http://savage2.com/en/images/mr_won.gif width=13 height=13 align=absmiddle></td>
+
+																			</tr>
+																		</table>
+																		</td>
+																	</tr>
+																</table>
+																</td>
+																<td><img src=http://savage2.com/en/images/mrbx5.gif width=4 height=34></td>
+															</tr>
+															<tr>
+
+																<td colspan=5><img src=http://savage2.com/en/images/mrbx6.gif width=308 height=5></td>
+															</tr>
+														</table>
+
+														</td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+
+										</table>
+										<!-- End Prime -->
+
+
+
+										</td>
+									</tr>
+									<tr>
+										<td colspan=3><img src=http://savage2.com/en/images/mrs3.gif width=537 height=10></td>
+									</tr>
+
+									<tr>
+										<td colspan=3><img src=http://savage2.com/en/images/spacer.gif width=1 height=10></td>
+									</tr>
+									<tr>
+										<td colspan=3>
+
+										<div class=matchcommentcont>
+										<span class=w16><b>Replay Comments</b></span> <span class=w10>(0 Comments)</span><br><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+
+										<div class=matchcommentbox>
+                                                                                <table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+												<td bgcolor=#4e0707><b>No comments for this match.</b></td>
+                                            </tr>
+                                        </table>
+                                        										</div>
+
+										<img src=http://savage2.com/en/images/spacer.gif width=2 height=10><br><span class=w16><b>Post New Comment</b></span><br>
+
+										<table border=0 cellpadding=0 cellspacing=0 class=w12 width=520>
+																						<tr><form name="fm2" action="match_replay.php?mid=197233" method=post>
+												<td colspan=2><textarea name=comment rows=4 scrolling=auto class=matchcommentinput></textarea></td>
+											</tr>
+											<tr>
+												<td><input type=submit value="Post Comment" class=b12></td>
+												<td align=right><b>Hurdy</b> <a href="logout.php" class=my11>-Logout-</td>
+
+											</tr></form>
+                                            
+
+
+										</table>
+										</div>
+
+										</td>
+									</tr>
+								</table>
+
+
+								</td>
+
+								<td valign=top width=359 align=right>
+								<!-- Right Col -->
+								<table border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<td valign=top width=169>
+                                        										<!-- Team 1 -->
+										<div id="teamlists">
+										<table border=0 cellpadding=0 cellspacing=0>
+
+											<tr>
+												<td><img src=images/mr_playinfo.gif width=167 height=30></td>
+											</tr>
+											<tr>
+												<td>
+												<!-- Top -->
+												<table border=0 cellpadding=0 cellspacing=0 width=100%>
+													<tr>
+														<td align=right>
+
+														<table border=0 cellpadding=0 cellspacing=3>
+															<tr>
+																<td><img src=images/mr_team1.gif width=45 height=43></td>
+																<td align=right><img src="images/mr_race_human.gif" width=45 height=43></td>
+															</tr>
+															<tr>
+																<td colspan=2>
+																<div id="teamcom">
+                                                                                                                                <a href="javascript:showIt('pspec');" ONCLICK="getCommMatchInfo(197233, 425970)"><div style="padding-top:23px;">&nbsp;Sharaleth</div></a>
+
+																
+																</div>
+																</td>
+															</tr>
+														</table>
+														</td>
+														<td align=right><img src="images/mr_flag_human.gif" width=65 height=105></td>
+													</tr>
+												</table>
+
+												</td>
+											</tr>
+
+											<tr>
+												<td align=center>
+
+												<div id=tlist>
+												<table border=0 cellpadding=2 cellspacing=1 class=w12 width=100%>
+                                                    <tr bgcolor=#7f6e42>
+                                                    	<td colspan=2><span class=w11><b>Action Players</b></span></td>
+
+                                                    </tr>
+                                                                                                        <tr bgcolor=#351405>
+														<td><a href="http://savage2.com/en/player_stats.php?id=308334" class=w12>&nbsp;PieSqrd</a></td>
+														<td width=18 align=center><a href="javascript:showIt('pspec');" ONCLICK="getPlayerMatchInfo(197233, 308334)"><img src=images/sicon.gif width=14 height=13 border=0></a></td>
+													</tr>
+                                                                                                        <tr>
+                                                        <td colspan=2>&nbsp;</td>
+                                                    </tr>
+
+                                                    
+												</table>
+												</div>
+
+												</td>
+											</tr>
+											<tr>
+												<td><img src=images/mr_matchinfo.gif width=167 height=30></td>
+											</tr>
+											<tr>
+
+												<td align=center>
+												<div id=mlist>
+												<table border=0 cellpadding=3 cellspacing=1 class=w11 width=100%>
+                                                    <tr bgcolor=#3a3a3a>
+                                                    	<td><b>Total Players</b></td>
+                                                    	<td width=18 align=center>1</td>
+                                                    </tr>
+                                                    <tr bgcolor=#4f4f4f>
+
+                                                    	<td><b>Average Skill Factor</b></td>
+                                                    	<td width=18 align=center>50</td>
+                                                    </tr>
+                                                    <tr bgcolor=#3a3a3a>
+                                                    	<td colspan=2><b>Clan:</b> N/A</td>
+                                                    </tr>
+
+                                                </table>
+                                                </div>
+												</td>
+											</tr>
+										</table>
+										</div>
+
+
+										</td>
+										<td><img src=http://savage2.com/en/images/spacer.gif width=10 height=10></td>
+
+										<td valign=top width=169>
+
+										<!-- Team 2 -->
+										<div id="teamlists">
+										<table border=0 cellpadding=0 cellspacing=0>
+											<tr>
+												<td><img src=images/mr_playinfo.gif width=167 height=30></td>
+											</tr>
+											<tr>
+
+												<td>
+												<!-- Top -->
+												<table border=0 cellpadding=0 cellspacing=0 width=100%>
+													<tr>
+														<td align=right>
+														<table border=0 cellpadding=0 cellspacing=3>
+															<tr>
+																<td><img src=images/mr_team2.gif width=45 height=43></td>
+																<td align=right><img src="images/mr_race_beast.gif" width=45 height=43></td>
+
+															</tr>
+															<tr>
+																<td colspan=2>
+																<div id="teamcom">
+																                                                                    <a href="javascript:showIt('pspec');" ONCLICK="getCommMatchInfo(197233, 430707)"><div style="padding-top:23px;">&nbsp;FireMissle</div></a>
+																
+																</div>
+																</td>
+															</tr>
+
+														</table>
+														</td>
+														<td align=right><img src="images/mr_flag_beast.gif" width=65 height=105></td>
+													</tr>
+												</table>
+
+												</td>
+											</tr>
+
+											<tr>
+
+												<td align=center>
+
+												<div id=tlist>
+												<table border=0 cellpadding=2 cellspacing=1 class=w12 width=100%>
+                                                    <tr bgcolor=#7f6e42>
+                                                    	<td colspan=2><span class=w11><b>Action Players</b></span></td>
+                                                    </tr>
+                                                                                                        <tr bgcolor=#351405>
+														<td><a href="http://savage2.com/en/player_stats.php?id=293373" class=w12>&nbsp;dakis</a></td>
+
+														<td width=18 align=center><a href="javascript:showIt('pspec');" ONCLICK="getPlayerMatchInfo(197233, 293373)"><img src=images/sicon.gif width=14 height=13 border=0></a></td>
+													</tr>
+                                                                                                        <tr bgcolor=#4e0707>
+														<td><a href="http://savage2.com/en/player_stats.php?id=430541" class=w12>&nbsp;Scarabus1</a></td>
+														<td width=18 align=center><a href="javascript:showIt('pspec');" ONCLICK="getPlayerMatchInfo(197233, 430541)"><img src=images/sicon.gif width=14 height=13 border=0></a></td>
+													</tr>
+                                                                                                        <!-- Seperator Area for between to loops above -->
+                                                    <tr>
+
+                                                    	<td colspan=2><img src=images/spacer.gif height=10></td>
+                                                    </tr>
+                                                    <tr bgcolor=#7f6e42>
+                                                    	<td colspan=2><span class=w11><b>Disconnected Players</b></span></td>
+                                                    </tr>
+                                                                                                        <tr bgcolor=#351405><!--1 -->
+														<td><a href="http://savage2.com/en/player_stats.php?id=419483" class=gr12>&nbsp;Red666</a></td>
+														<td width=18 align=center><a href="javascript:showIt('pspec');" ONCLICK="getPlayerMatchInfo(197233, 419483)"><img src=images/sicon.gif width=14 height=13 border=0></a></td>
+
+													</tr>
+                                                    
+												</table>
+												</div>
+
+												</td>
+											</tr>
+											<tr>
+												<td><img src=images/mr_matchinfo.gif width=167 height=30></td>
+											</tr>
+
+											<tr>
+												<td align=center>
+												<div id=mlist>
+												<table border=0 cellpadding=3 cellspacing=1 class=w11 width=100%>
+                                                    <tr bgcolor=#3a3a3a>
+                                                    	<td><b>Total Players</b></td>
+                                                    	<td width=18 align=center>3</td>
+                                                    </tr>
+
+                                                    <tr bgcolor=#4f4f4f>
+                                                    	<td><b>Average Skill Factor</b></td>
+                                                    	<td width=18 align=center>44</td>
+                                                    </tr>
+                                                    <tr bgcolor=#3a3a3a>
+                                                    	<td colspan=2><b>Clan:</b> N/A</td>
+
+                                                    </tr>
+                                                </table>
+                                                </div>
+												</td>
+											</tr>
+										</table>
+										</div>
+
+
+
+										</td>
+									</tr>
+									<tr>
+										<td colspan=3><img src=http://savage2.com/en/images/spacer.gif width=1 height=10></td>
+									</tr>
+									<tr>
+										<td colspan=3>
+										<div class=topmatches>
+										<span class=w16><b>Top Rated Matches</b></span><br><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+
+
+										<div class=topmatches_scrollbox>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+												<td valign=top width=70><img src="maps/deadlock_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>17477</span></td>
+
+														<td align=right>Votes: 52</td>
+													</tr>
+													<tr>
+														<td>Duration: 00:26:13</td>
+													</tr>
+													<tr>
+														<td>Rating: 4                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+														<td><a href="match_replay.php?mid=17477" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+												<td valign=top width=70><img src="maps/morning_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+
+														<td><b>Match ID:</b> <span class=g12>43748</span></td>
+														<td align=right>Votes: 33</td>
+													</tr>
+													<tr>
+														<td>Duration: 01:22:13</td>
+													</tr>
+
+													<tr>
+														<td>Rating: 5                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+
+														<td><a href="match_replay.php?mid=43748" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+
+												<td valign=top width=70><img src="maps/eden_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>8238</span></td>
+														<td align=right>Votes: 34</td>
+													</tr>
+
+													<tr>
+														<td>Duration: 00:04:11</td>
+													</tr>
+													<tr>
+														<td>Rating: 3                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+
+													<tr>
+														<td><a href="match_replay.php?mid=8238" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+
+											<tr>
+												<td valign=top width=70><img src="maps/morning_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>29611</span></td>
+														<td align=right>Votes: 19</td>
+
+													</tr>
+													<tr>
+														<td>Duration: 00:58:09</td>
+													</tr>
+													<tr>
+														<td>Rating: 4                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+														<td><a href="match_replay.php?mid=29611" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+												<td valign=top width=70><img src="maps/losthills_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>90789</span></td>
+
+														<td align=right>Votes: 15</td>
+													</tr>
+													<tr>
+														<td>Duration: 01:58:07</td>
+													</tr>
+													<tr>
+														<td>Rating: 5                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+														<td><a href="match_replay.php?mid=90789" class=my12>View Match Details</a></td>
+													</tr>
+
+												</table>
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+												<td valign=top width=70><img src="maps/eden_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>12021</span></td>
+														<td align=right>Votes: 15</td>
+													</tr>
+													<tr>
+														<td>Duration: 00:09:00</td>
+
+													</tr>
+													<tr>
+														<td>Rating: 4                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+
+														<td><a href="match_replay.php?mid=12021" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+
+												<td valign=top width=70><img src="maps/crossroads_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>112489</span></td>
+														<td align=right>Votes: 12</td>
+													</tr>
+
+													<tr>
+														<td>Duration: 00:54:00</td>
+													</tr>
+													<tr>
+														<td>Rating: 5                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+														<td><a href="match_replay.php?mid=112489" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+												<td valign=top width=70><img src="maps/hiddenvillage_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>134855</span></td>
+
+														<td align=right>Votes: 12</td>
+													</tr>
+													<tr>
+														<td>Duration: 01:02:37</td>
+													</tr>
+													<tr>
+														<td>Rating: 5                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+														<td><a href="match_replay.php?mid=134855" class=my12>View Match Details</a></td>
+													</tr>
+
+												</table>
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+												<td valign=top width=70><img src="maps/crossroads_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>17966</span></td>
+														<td align=right>Votes: 14</td>
+													</tr>
+													<tr>
+														<td>Duration: 00:45:54</td>
+
+													</tr>
+													<tr>
+														<td>Rating: 4                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                            </tr>
+													<tr>
+
+														<td><a href="match_replay.php?mid=17966" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+                                        										<table border=0 cellpadding=3 cellspacing=2 width=100% class=w12>
+											<tr>
+
+												<td valign=top width=70><img src="maps/hellpeak_sml.jpg" width=70 height=70 class=mtn></td>
+												<td valign=top>
+												<table border=0 cellpadding=2 cellspacing=0 width=100% class=w12 bgcolor=#230a03>
+													<tr bgcolor=#4e0707>
+														<td><b>Match ID:</b> <span class=g12>13693</span></td>
+														<td align=right>Votes: 13</td>
+													</tr>
+
+													<tr>
+														<td>Duration: 00:37:43</td>
+													</tr>
+													<tr>
+														<td>Rating: 4                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+                                                                                                                <img src=http://savage2.com/en/images/replaystar.gif width=13 height=13 align=absmiddle>
+
+                                                                                                            </tr>
+													<tr>
+														<td><a href="match_replay.php?mid=13693" class=my12>View Match Details</a></td>
+													</tr>
+												</table>
+												</td>
+											</tr>
+										</table><img src=http://savage2.com/en/images/spacer.gif width=2 height=5>
+
+                                        
+										</div>
+
+
+										</div>
+										</td>
+									</tr>
+								</table>
+
+								</td>
+
+							</tr>
+
+						</table>
+
+						</td>
+					</tr>
+				</table>
+				</td>
+				<td width=52 valign=top><img src=http://savage2.com/en/images/ps_rt.gif width=52 height=30></td>
+			</tr>
+		</table><br><br><br><br>
+
+		</td>
+	</tr>
+</table>
+
+<div name="pspec" id="pspec" style="display: none;"><div id="translucentbkg"></div></div>
+
+
+</body>
+</html>
