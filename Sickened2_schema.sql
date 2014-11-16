@@ -300,7 +300,7 @@ CREATE TABLE `buddies` (
    `clan_tag` varchar(50) DEFAULT NULL,
    `clan_img` varchar(50) DEFAULT NULL,
    `avatar` varchar(50) DEFAULT NULL,
-   PRIMARY KEY (`id`)
+   PRIMARY KEY (`target_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- Sickened2
