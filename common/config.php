@@ -9,4 +9,6 @@ $config['hash'] = "abcdefgh";
 
 $config['public_url'] = "s2.michaelk.ch.localhost";
 
+$dbcon = NULL;
+
 ?>

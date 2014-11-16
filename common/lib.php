@@ -35,19 +35,17 @@ function post_serialized($key, $default = array())
 function db_open()
 {
 	global $config;
+	global $dbcon;
 	
 	$db = $config['db'];
 	
-	mysql_connect($db['host'], $db['username'], $db['password'])
+	$dbcon = mysqli_connect($db['host'], $db['username'], $db['password'], $db['database'])
 		or die("No connection to database");
-	
-	mysql_select_db($db['database'])
-		or die("Cannot select database");
 }
 
 /* Send query */
 function db_query($query) {
-	$result = mysql_query($query);
+	$result = mysqli_query($dbcon, $query);
 	if (!$result)
 		throw new Exception(mysql_error());
 	return $result;
