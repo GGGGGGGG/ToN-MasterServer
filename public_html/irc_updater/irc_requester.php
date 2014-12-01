@@ -1,6 +1,7 @@
 <?php
 
 include("../common/lib.php");
+include("../common/proxy.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote"));
@@ -13,6 +14,11 @@ function handle_auth()
 	$nickname = post_input("email");
 	$password = post_input("password");
 	
+	if($config['isProxy']) {
+		$data = auth_proxy($nickname, $password);
+		return $data;
+	}
+
 	$query = "
 		SELECT 
 			users.username AS nickname,
@@ -29,7 +35,7 @@ function handle_auth()
 	
 	if(!mysql_num_rows($result) == 1) {
 		/* No user found, return error */
-		return array("error" => "Invalid login. :P");	
+		return array("error" => "Invalid login. :/");
 	} else {
 		/* Return user data */
 		$data = mysql_fetch_assoc($result);

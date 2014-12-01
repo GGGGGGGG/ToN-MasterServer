@@ -1,6 +1,7 @@
 <?php
 
 include("../common/lib.php");
+include("../common/proxy.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn"));
@@ -21,6 +22,13 @@ function handle_get_online()
 	while($row = mysql_fetch_assoc($result)) {
 		$data[$row['id']] = $row;
 	}
+
+	global $config;
+	if($config['isProxy']) {
+		$officialdata = get_online_proxy();
+		$data = array_merge($officialdata, $data);
+	}
+
 	return $data;
 }
 
