@@ -1,7 +1,7 @@
 <?php
 
-include("../common/lib.php");
-include("../common/proxy.php");
+include("../../common/lib.php");
+include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote"));

@@ -1,7 +1,7 @@
 <?php
 
-include("../common/lib.php");
-include("../common/proxy.php");
+include("../../common/lib.php");
+include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn"));
@@ -9,7 +9,9 @@ dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown",
 /* Getting list of servers */
 function handle_get_online()
 {
-	$result = mysql_query("
+	global $dbcon;
+
+	$result = mysqli_query($dbcon, "
 		SELECT 
 			id, port, ip, max_conn, num_conn, name, description, 
 			minlevel, maxlevel, official
@@ -19,7 +21,7 @@ function handle_get_online()
 			updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 			
 	$data = array();
-	while($row = mysql_fetch_assoc($result)) {
+	while($row = mysqli_fetch_assoc($result)) {
 		$data[$row['id']] = $row;
 	}
 

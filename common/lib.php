@@ -1,7 +1,7 @@
 <?php
 
 /* Show all errors */
-ini_set('display_errors', 'On');
+ini_set('display_errors', 'Off');
 error_reporting(E_ALL);
 
 /* Load config */
@@ -10,16 +10,18 @@ include("config.php");
 /* Get input values */
 function get_input($key, $default = "")
 {
+	global $dbcon;
 	if(!isset($_GET[$key]))
-		return mysql_real_escape_string($default);
-	return mysql_real_escape_string($_GET[$key]);
+		return mysqli_real_escape_string($dbcon, $default);
+	return mysqli_real_escape_string($dbcon, $_GET[$key]);
 }
 
 function post_input($key, $default = "")
 {
+	global $dbcon;
 	if(!isset($_POST[$key]))
-		return mysql_real_escape_string($default);
-	return mysql_real_escape_string($_POST[$key]);
+		return mysqli_real_escape_string($dbcon, $default);
+	return mysqli_real_escape_string($dbcon, $_POST[$key]);
 }
 
 function post_serialized($key, $default = array())
@@ -43,8 +45,21 @@ function db_open()
 		or die("No connection to database");
 }
 
+function patchesdb_open()
+{
+	global $config;
+	global $dbcon;
+	
+	$db = $config['db'];
+	
+	$dbcon = mysqli_connect($db['host'], $db['username'], $db['password'], $db['patchesdb'])
+		or die("No connection to database");
+}
+
+
 /* Send query */
 function db_query($query) {
+	global $dbcon;
 	$result = mysqli_query($dbcon, $query);
 	if (!$result)
 		throw new Exception(mysql_error());
