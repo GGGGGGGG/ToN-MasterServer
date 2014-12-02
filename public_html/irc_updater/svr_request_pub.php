@@ -57,11 +57,13 @@ function handle_set_online()
 			num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW()";
+
+	global $dbcon;
 		
-	mysql_query($query);
+	mysqli_query($dbcon, $query);
 	
 	/* Send id in answer */
-	$id = mysql_insert_id();
+	$id = mysqli_insert_id($dbcon);
 	$data = array(
 		"acct_id" => $id,
 		"svr_id" => $id,
@@ -91,6 +93,8 @@ function handle_set_online_ids()
 /* Remove a server */
 function handle_shutdown()
 {
+	global $dbcon;
+
 	/* Remove server from list */
 	$id = intval(post_input("server_id"));
 	$query = "
@@ -98,7 +102,7 @@ function handle_shutdown()
 			server 
 		WHERE
 			id = $id";
-	mysql_query($query);
+	mysqli_query($dbcon, $query);
 	
 	/* Return empty */
 	return array();
@@ -107,6 +111,8 @@ function handle_shutdown()
 /* User joins a server */
 function handle_c_conn() 
 {
+	global $dbcon;
+
 	$account_id = intval(post_input("account_id"));
 	$server_id = intval(post_input("server_id"));
 	
@@ -126,8 +132,8 @@ function handle_c_conn()
 
 	/* Sickened2 - add missing parameters */
 	$query = "SELECT username from users where id = $account_id";
-	$result = mysql_query($query);
-	$row = mysql_fetch_assoc($result);
+	$result = mysqli_query($dbcon, $query);
+	$row = mysqli_fetch_assoc($result);
 	$client_name = $row['username'];
 
 	return array("account_id" => post_input("account_id"), "client_name" => $client_name, "c_conn" => "OK");
