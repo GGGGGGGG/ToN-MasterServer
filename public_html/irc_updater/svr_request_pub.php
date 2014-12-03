@@ -46,11 +46,24 @@ function handle_set_online()
 	$desc = post_input("desc");
 	$minlevel = intval(post_input("minlevel"));
 	$maxlevel = intval(post_input("maxlevel"));	
-	
+	$login = post_input("login");
+	$pass = post_input("pass");
+file_put_contents("/var/tmp/qwerty", $ip."\n", FILE_APPEND);
+	/* authenticate server */
+	global $config;
+	$data = array();
+	if($config['isProxy']) {
+		$data = auth_proxy($login, $pass);
+		if(!array_key_exists('cookie', $data))
+			return array();
+	}
+
+	$server_id = intval($data['account_id']);
+
 	/* Create in database */
 	$query = "
 		INSERT INTO server SET 
-			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
+			id = '$server_id', ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$desc', minlevel = $minlevel,
 			maxlevel = $maxlevel, updated = NOW()
 		ON DUPLICATE KEY UPDATE
@@ -58,8 +71,7 @@ function handle_set_online()
 			description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW()";
 
-	global $dbcon;
-		
+	global $dbcon;		
 	mysqli_query($dbcon, $query);
 	
 	/* Send id in answer */
