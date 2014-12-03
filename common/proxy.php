@@ -37,7 +37,7 @@ function c_conn_proxy($c_conn) {
 				'ip' => $c_conn['ip']));
 	try {
 		$body = $r->send()->getBody();
-		if(strcmp($body, 'N;')) return array();
+		if(strcmp($body, 'N;') !== 0) return array();
 		return unserialize($body);
 	} catch (Http_Request2_Exception $ex) {
 		//echo $ex;
