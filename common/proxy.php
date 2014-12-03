@@ -28,6 +28,7 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 }
 
 function c_conn_proxy($c_conn) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request_pub.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
 	$r->addPostParameter(array('f' => 'c_conn', 
 				'account_id' => $c_conn['account_id'], 
@@ -37,7 +38,7 @@ function c_conn_proxy($c_conn) {
 				'ip' => $c_conn['ip']));
 	try {
 		$body = $r->send()->getBody();
-		if(strcmp($body, 'N;') !== 0) return array();
+		if(strcmp($body, 'N;') == 0) return array();
 		return unserialize($body);
 	} catch (Http_Request2_Exception $ex) {
 		//echo $ex;
