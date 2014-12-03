@@ -27,6 +27,42 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 	return array();	
 }
 
+function set_online_proxy($set_online) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request_pub.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$params = array('f' => 'set_online');
+	while(list($key, $value) = each($set_online)) {
+		if($value != "")
+			$params[$key] = $value;
+	}
+	$r->addPostParameter($params);
+/*
+	$r->addPostParameter(array('f' => 'set_online',
+				'ip' => $set_online['ip'],
+				'port' => $set_online['port'],
+				'num_conn' => $set_online['num_conn'],
+				'num_max' => $set_online['num_max'],
+				'name' => $set_online['name'],
+				'desc' => $set_online['desc'],
+				'status' => $set_online['status'],
+				'minkarma' => $set_online['minkarma'],
+				'location' => $set_online['location'],
+				'cgt' => $set_online['cgt'],
+				'next_map' => $set_online['next_map'],
+				'map' => $set_online['map'],
+				'login' => $set_online['login'],
+				'pass' => $set_online['pass'],
+				'minlevel' => $set_online['minlevel']));
+*/
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();	
+}
+
 function c_conn_proxy($c_conn) {
 $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request_pub.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
