@@ -8,6 +8,6 @@ $config['db']['patchesdb'] = "patches";
 $config['hash'] = "abcdefgh";
 $config['isProxy'] = True;
 $config['public_url'] = "s2.michaelk.ch.localhost";
-
+$patchesdbcon = NULL;
 $dbcon = NULL;
 ?>

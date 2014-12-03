@@ -115,7 +115,19 @@ function handle_c_conn()
 
 	$account_id = intval(post_input("account_id"));
 	$server_id = intval(post_input("server_id"));
-	
+
+	global $config;
+	if($config['isProxy']) {
+		$c_conn['account_id'] = post_input("account_id");
+		$c_conn['server_id'] = post_input("server_id");
+		$c_conn['num_conn'] = post_input("num_conn");
+		$c_conn['cookie'] = post_input("cookie");
+		$c_conn['ip'] = post_input("ip");
+		$data = c_conn_proxy($c_conn);
+		if(!array_key_exists('c_conn', $data))
+			return;
+	}
+
 	$query = "
 		INSERT INTO
 			player

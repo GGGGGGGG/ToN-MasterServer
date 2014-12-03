@@ -17,9 +17,11 @@ function handle_auth()
 	if($config['isProxy']) {
 		$data = auth_proxy($nickname, $password);
 		if(array_key_exists("cookie", $data)) {
-			$pquery = "INSERT INTO users (id, username, password, cookie) VALUES ({$data['account_id']}, {$data['nickname']}, 'x', {$data['cookie']})";
-			global $dbcon;
-			mysqli_query($dbcon, $pquery);
+			$acc_id = intval($data['account_id']);
+			$nickname = $data['nickname'];
+			$cookie = $data['cookie'];
+			$pquery = "REPLACE INTO users (id, username, cookie) VALUES ({$acc_id}, '{$nickname}', '{$cookie}')";
+			db_query($pquery);
 		}
 		return $data;
 	}
