@@ -113,15 +113,15 @@ file_put_contents("/var/tmp/qwerty", $ip."\n".serialize($data)."\n", FILE_APPEND
 	}
 
 	if($isOfficial) {
-		// generate server id if not returned by official masterserver
-		$res = mysqli_query($dbcon, "SELECT id from server ORDER BY id DESC LIMIT 1");
-		$row = mysqli_fetch_assoc($res);
-		$data['svr_id'] = str(intval($row['id']) + 1);
+		// this shouldn't happen! generate server id if not returned by official masterserver
+		//$res = mysqli_query($dbcon, "SELECT id from server ORDER BY id DESC LIMIT 1");
+		//$row = mysqli_fetch_assoc($res);
+		//$data['svr_id'] = str(intval($row['id']) + 1);
 		$server_id = $data['svr_id'];
-		$official = 'Y';
+		$official = '1';
 	} else {
 		$server_id = intval($data['account_id']);
-		$official = 'N';
+		$official = '0';
 	}
 
 	/* Create in database */
