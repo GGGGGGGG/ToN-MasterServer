@@ -65,7 +65,7 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 }
 
 function c_disc_proxy($account_id, $server_id) {
-$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request_pub.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
 	$r->addPostParameter(array('f' => 'c_disc',
 				'account_id' => $account_id,
