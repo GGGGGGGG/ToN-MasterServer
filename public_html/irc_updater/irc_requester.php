@@ -168,6 +168,12 @@ function handle_new_buddy()
 	$account_id = intval(post_input("account_id"));
 	$buddy_id = intval(post_input("buddy_id"));
 	
+	global $config;
+	if($config['isProxy']) {
+		$data = new_buddy_proxy($account_id, $buddy_id);
+		return $data;
+	}
+
 	/* See if these are two valid accounts */
 	$query = "
 		SELECT
@@ -202,6 +208,12 @@ function handle_remove_buddy()
 	$account_id = intval(post_input("account_id"));
 	$buddy_id = intval(post_input("buddy_id"));
 	
+	global $config;
+	if($config['isProxy']) {
+		$data = remove_buddy_proxy($account_id, $buddy_id);
+		return $data;
+	}
+
 	/* Insert buddy entry */
 	$query = "
 		DELETE FROM

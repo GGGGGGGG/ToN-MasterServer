@@ -149,4 +149,33 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_request
 	return array();	
 }
 
+function new_buddy_proxy($account_id, $buddy_id) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$params = array('f' => 'new_buddy', 'account_id' => $account_id, 'buddy_id' => $buddy_id);
+	$r->addPostParameter($params);
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();	
+}
+
+function remove_buddy_proxy($account_id, $buddy_id) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$params = array('f' => 'remove_buddy', 'account_id' => $account_id, 'buddy_id' => $buddy_id);
+	$r->addPostParameter($params);
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();	
+}
+
+
 ?>
