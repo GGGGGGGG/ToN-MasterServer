@@ -81,4 +81,33 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 	}
 	return array();
 }
+
+function get_all_stats_proxy($account_id) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$r->addPostParameter(array('f' => 'get_all_stats',
+				'account_id[0]' => $account_id));
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();	
+}
+
+function get_item_list($account_id) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$r->addPostParameter(array('f' => 'ietm_list',
+				'account_id' => $account_id));
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();	
+}
+
 ?>

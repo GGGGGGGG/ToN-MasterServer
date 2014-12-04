@@ -89,22 +89,36 @@ function handle_auth()
 	}
 }
 
-/* Item list [empty] */
-function handle_item_list()
-{
-	return array();		
-}
-
 /* Clan roster [empty] */
 function handle_clan_roster()
 {
-	return array();
+	return array();		
 }
 
-/* All stats [empty] */
+/* Item list */
+function handle_item_list()
+{
+	$account_id = post_input("account_id");
+	global $config;
+	$data = array();
+	if($config['isProxy']) {
+		$data = item_list_proxy($account_id);
+file_put_contents("/var/tmp/item_list.txt", serialize($data)."\n\n", FILE_APPEND);
+	}
+	return $data;
+}
+
+/* All stats */
 function handle_get_all_stats()
 {
-	return array();		
+	$account_id = post_input("account_id[0]");
+	global $config;
+	$data = array();
+	if($config['isProxy']) {
+		$data = get_all_stats_proxy($account_id);
+file_put_contents("/var/tmp/all_stats.txt", serialize($data)."\n\n", FILE_APPEND);
+	}
+	return $data;
 }
 
 /* Get account ID for nickname */

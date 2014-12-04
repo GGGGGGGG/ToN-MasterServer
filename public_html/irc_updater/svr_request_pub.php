@@ -28,7 +28,7 @@ function handle_get_online()
 	global $config;
 	if($config['isProxy']) {
 		$officialdata = get_online_proxy();
-		$data = array_merge($officialdata, $data);
+		$data = array_merge(array_diff_key($officialdata, $data), $data);
 	}
 
 	return $data;
@@ -60,7 +60,7 @@ function handle_set_online()
 	$isOfficial = False;
 	if($config['isProxy']) {
 		// try official server auth method first
-		$set_online['ip'] = post_input("ip");
+		$set_online['ip'] = $ip;//post_input("ip");
 		$set_online['port'] = post_input("port");
 		$set_online['num_conn'] = post_input("num_conn");
 		$set_online['num_max'] = post_input("num_max");
