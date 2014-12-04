@@ -36,24 +36,6 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 			$params[$key] = $value;
 	}
 	$r->addPostParameter($params);
-/*
-	$r->addPostParameter(array('f' => 'set_online',
-				'ip' => $set_online['ip'],
-				'port' => $set_online['port'],
-				'num_conn' => $set_online['num_conn'],
-				'num_max' => $set_online['num_max'],
-				'name' => $set_online['name'],
-				'desc' => $set_online['desc'],
-				'status' => $set_online['status'],
-				'minkarma' => $set_online['minkarma'],
-				'location' => $set_online['location'],
-				'cgt' => $set_online['cgt'],
-				'next_map' => $set_online['next_map'],
-				'map' => $set_online['map'],
-				'login' => $set_online['login'],
-				'pass' => $set_online['pass'],
-				'minlevel' => $set_online['minlevel']));
-*/
 	try {
 		$body = $r->send()->getBody();
 		return unserialize($body);
@@ -82,11 +64,12 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 	return array();
 }
 
-function get_all_stats_proxy($account_id) {
+function c_disc_proxy($account_id, $server_id) {
 $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
-	$r->addPostParameter(array('f' => 'get_all_stats',
-				'account_id[0]' => $account_id));
+	$r->addPostParameter(array('f' => 'c_disc',
+				'account_id' => $account_id,
+				'server_id' => $server_id));
 	try {
 		$body = $r->send()->getBody();
 		return unserialize($body);
@@ -96,11 +79,67 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_request
 	return array();	
 }
 
+function set_online_ids_proxy($set_online_ids) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$params = array('f' => 'set_online_ids');
+	while(list($key, $value) = each($set_online_ids)) {
+		if($value != "") {
+			if(strcmp($key, "account_id") !== 0)
+				$params[$key] = $value;
+			else {
+				for($i = 0; $i < count($set_online_ids['account_id']); ++$i)
+					$params["account_id[{$i}]"] = $set_online_ids['account_id'][$i];
+			}
+		}
+	}
+	$r->addPostParameter($params);
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();
+}
+
 function get_item_list($account_id) {
 $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
-	$r->addPostParameter(array('f' => 'ietm_list',
+	$r->addPostParameter(array('f' => 'item_list',
 				'account_id' => $account_id));
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();	
+}
+
+function nick2id_proxy($nicknames) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$params = array('f' => 'nick2id');
+	for($i = 0; $i < count($nicknames); ++$i)
+		$params["nickname[{$i}]"] = $nicknames[$i];
+	$r->addPostParameter($params);
+	try {
+		$body = $r->send()->getBody();
+		return unserialize($body);
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return array();	
+}
+
+function get_all_stats_proxy($account_ids) {
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
+	$params = array('f' => 'get_all_stats');
+	for($i = 0; $i < count($account_ids); ++$i)
+		$params["account_id[{$i}]"] = $account_ids[$i];
+	$r->addPostParameter($params);
 	try {
 		$body = $r->send()->getBody();
 		return unserialize($body);

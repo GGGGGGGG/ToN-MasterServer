@@ -4,7 +4,7 @@ include("../../common/lib.php");
 include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn"));
+dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn", "c_disc"));
 
 /* Getting list of servers */
 function handle_get_online()
@@ -166,6 +166,20 @@ function handle_set_online_ids()
 		WHERE
 			login = '$login'";
 			
+	global $config;
+	if($config['isProxy']) {
+		$set_online_ids['login'] = post_input("login");
+		$set_online_ids['pass'] = post_input("pass");
+		$set_online_ids['num_conn'] = post_input("num_conn");
+		$account_id = array();
+		for($i = 0; $i < intval($num_conn); ++$i) {
+			$account_id[$i] = post_input("account_id[{$i}]");
+		}
+		$set_online_ids['account_id'] = $account_id;
+		$data = set_online_ids_proxy($set_online_ids);
+		return $data;
+	}
+
 	/* Return empty */
 	return array();
 }
@@ -248,7 +262,16 @@ function handle_c_disc()
 			user = {$account_id}";
 	db_query($query);
 	
-	return array("c_disk" => "OK");
+	global $config;
+	$data =array();
+	if($config['isProxy']) {
+		$account_id = post_input('account_id');
+		$server_id = post_input('server_id');
+		$data = c_disc_proxy($account_id, $server_id);
+		return $data;
+	}
+
+	return array("c_disc" => "OK");
 }
 
 ?>

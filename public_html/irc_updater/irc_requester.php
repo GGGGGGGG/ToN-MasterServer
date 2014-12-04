@@ -95,9 +95,10 @@ function handle_clan_roster()
 	return array();		
 }
 
-/* Item list */
+/* Item list [empty] */
 function handle_item_list()
 {
+	return array();
 	$account_id = post_input("account_id");
 	global $config;
 	$data = array();
@@ -111,11 +112,12 @@ file_put_contents("/var/tmp/item_list.txt", serialize($data)."\n\n", FILE_APPEND
 /* All stats */
 function handle_get_all_stats()
 {
-	$account_id = post_input("account_id[0]");
+	$account_ids = $_POST["account_id"];
+file_put_contents("/var/tmp/all_stats.txt", $account_id."\n", FILE_APPEND);
 	global $config;
 	$data = array();
 	if($config['isProxy']) {
-		$data = get_all_stats_proxy($account_id);
+		$data = get_all_stats_proxy($account_ids);
 file_put_contents("/var/tmp/all_stats.txt", serialize($data)."\n\n", FILE_APPEND);
 	}
 	return $data;
@@ -128,6 +130,12 @@ function handle_nick2id()
 		return array();
 		
 	$nicknames = $_POST["nickname"];
+
+	global $config;
+	if($config['isProxy']) {
+		$data = nick2id_proxy($nicknames);
+		return $data;
+	}
 	
 	$data = array();
 	foreach($nicknames as $nick) {
