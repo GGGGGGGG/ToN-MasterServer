@@ -13,6 +13,9 @@ function handle_auth()
 	
 	$nickname = post_input("email");
 	$password = post_input("password");
+
+	$acc_id = 0;
+	$cookie = "";
 	
 	if($config['isProxy']) {
 		$data = auth_proxy($nickname, $password);
@@ -20,32 +23,49 @@ function handle_auth()
 			$acc_id = intval($data['account_id']);
 			$nickname = $data['nickname'];
 			$cookie = $data['cookie'];
-			$pquery = "REPLACE INTO users (id, username, cookie) VALUES ({$acc_id}, '{$nickname}', '{$cookie}')";
+			$pquery = "INSERT INTO users (id, username, cookie) VALUES ({$acc_id}, '{$nickname}', '{$cookie}') ON DUPLICATE KEY UPDATE cookie='{$cookie}'";
 			db_query($pquery);
+			return $data;
 		}
-		return $data;
 	}
+
+	/* account is invalid on official MS, so now check here */
 
 	$query = "
 		SELECT 
 			users.username AS nickname,
 			users.id AS account_id,
-			users.email
+			users.email,
+			password AS passwordhash
 		FROM 
 			users
 		WHERE 
 			username = '{$nickname}' 
-		AND 
-			password = MD5('{$config['hash']}{$password}')";
-	
-	$result = mysql_query($query);
-	
-	if(!mysql_num_rows($result) == 1) {
+		";//AND 
+		//	password = SHA2('{$config['hash']}{$password}', 256)";
+
+	global $dbcon;
+	$result = mysqli_query($dbcon, $query);
+	if(!mysqli_num_rows($result) == 1) {
 		/* No user found, return error */
 		return array("error" => "Invalid login. :/");
 	} else {
+		$data = mysqli_fetch_assoc($result);
+
+		/* verify password */
+		$passwordhash = $data['passwordhash'];
+		$authSuccess = password_verify($password, $passwordhash);
+		if(!$authSuccess)
+			return array("error" => "Invalid login. :/");
+
+		/* generate cookie for user and add to DB */
+		$cookie = md5(uniqid(rand(), true));
+		$data["cookie"] = $cookie; 
+
+		$pquery = "UPDATE users SET cookie='{$cookie}' WHERE username='{$nickname}'";
+		db_query($pquery);
+
 		/* Return user data */
-		$data = mysql_fetch_assoc($result);
 		$data["account_type"] = 1;	
 		
 		/* Buddy list */
@@ -66,13 +86,13 @@ function handle_auth()
 				buddies.target_id = users.id
 			WHERE
 				users.source_id = {$data['account_id']}";
-		$result = mysql_query($query);
+		$result = mysqli_query($dbcon, $query);
 		
-		if(mysql_num_rows($result) == 0) {
+		if(mysqli_num_rows($result) == 0) {
 			$data["buddy"] = array("error" => "No buddies found.");
 		} else {
 			$data["buddy"] = array();
-			while($row = mysql_fetch_assoc($result)) {
+			while($row = mysqli_fetch_assoc($result)) {
 				$data["buddy"][$row["buddy_id"]] = $buddy;
 			}
 		}
@@ -81,10 +101,6 @@ function handle_auth()
 		$data["player_stats"] = array($data['account_id'] => array());
 		$data["ranked_stats"] = array($data['account_id'] => array());
 		
-		/* Sickened2 */
-		/* generate cookie for user */
-		$data["cookie"] = md5(uniqid(rand(), true));
-
 		return $data;
 	}
 }
@@ -104,7 +120,6 @@ function handle_item_list()
 	$data = array();
 	if($config['isProxy']) {
 		$data = item_list_proxy($account_id);
-file_put_contents("/var/tmp/item_list.txt", serialize($data)."\n\n", FILE_APPEND);
 	}
 	return $data;
 }
@@ -113,12 +128,10 @@ file_put_contents("/var/tmp/item_list.txt", serialize($data)."\n\n", FILE_APPEND
 function handle_get_all_stats()
 {
 	$account_ids = $_POST["account_id"];
-file_put_contents("/var/tmp/all_stats.txt", $account_id."\n", FILE_APPEND);
 	global $config;
 	$data = array();
 	if($config['isProxy']) {
 		$data = get_all_stats_proxy($account_ids);
-file_put_contents("/var/tmp/all_stats.txt", serialize($data)."\n\n", FILE_APPEND);
 	}
 	return $data;
 }

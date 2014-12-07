@@ -48,12 +48,32 @@ function db_open()
 function patchesdb_open()
 {
 	global $config;
-	global $dbcon;
+	global $patchesdbcon;
 	
 	$db = $config['db'];
 	
-	$dbcon = mysqli_connect($db['host'], $db['username'], $db['password'], $db['patchesdb'])
+	$patchesdbcon = mysqli_connect($db['host'], $db['username'], $db['password'], $db['patchesdb'])
 		or die("No connection to database");
+}
+
+function patchesdb_query($query) {
+	global $patchesdbcon;
+	$result = mysqli_query($patchesdbcon, $query);
+	if (!$result)
+		throw new Exception(mysqli_error($patchesdbcon));
+	return $result;
+}
+
+function patchesdb_close()
+{
+	global $patchesdbcon;
+	mysqli_close($patchesdbcon);
+}
+
+function db_close()
+{
+	global $dbcon;
+	mysqli_close($dbcon);
 }
 
 
@@ -62,7 +82,7 @@ function db_query($query) {
 	global $dbcon;
 	$result = mysqli_query($dbcon, $query);
 	if (!$result)
-		throw new Exception(mysql_error());
+		throw new Exception(mysqli_error($dbcon));
 	return $result;
 }
 
