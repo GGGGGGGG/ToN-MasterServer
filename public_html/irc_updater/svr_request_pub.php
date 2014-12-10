@@ -158,7 +158,8 @@ file_put_contents("/var/tmp/qwerty", $ip."\n".serialize($data)."\n", FILE_APPEND
 function handle_set_online_ids()
 {
 	/* Update number of connections */
-	$num_conn = intval(post_input("num_conn"));	
+	$num_conn = intval(post_input("num_conn"));
+	$login = post_input("login");
 	$query = "
 		UPDATE server SET
 			num_conn = $num_conn,
@@ -205,21 +206,42 @@ function handle_shutdown()
 /* User joins a server */
 function handle_c_conn() 
 {
+	global $config;
 	global $dbcon;
 
 	$account_id = intval(post_input("account_id"));
 	$server_id = intval(post_input("server_id"));
+	$c_conn['account_id'] = post_input("account_id");
+	$c_conn['server_id'] = post_input("server_id");
+	$c_conn['num_conn'] = post_input("num_conn");
+	$c_conn['cookie'] = post_input("cookie");
+	$c_conn['ip'] = post_input("ip");
 
-	global $config;
-	if($config['isProxy']) {
-		$c_conn['account_id'] = post_input("account_id");
-		$c_conn['server_id'] = post_input("server_id");
-		$c_conn['num_conn'] = post_input("num_conn");
-		$c_conn['cookie'] = post_input("cookie");
-		$c_conn['ip'] = post_input("ip");
+	$cookie = $c_conn['cookie'];
+
+	/* first attempt to verify cookie on unofficial MS */
+	$result = db_query("SELECT username FROM users WHERE id = $account_id AND cookie = '$cookie'");
+	$row = mysqli_fetch_assoc($result);
+	if(count($row) != 0) {
+		$client_name = $row['username'];
+	} elseif($config['isProxy']) {
+		/* second attempt using official MS */
 		$data = c_conn_proxy($c_conn);
 		if(!array_key_exists('c_conn', $data))
-			return;
+			return array();
+		/* verification succeeded */
+		// fetch nickname using id by webextraction (see chatserver)
+		$url = "http://savage2.com/en/player_stats.php?id={$account_id}";
+		$pattern = "/<span class=g16><b>(\w+)<\/b>/";
+		$html = file_get_contents($url);
+		preg_match_all($pattern, $html, $matches);
+		$nickname = $matches[1][0];
+file_put_contents("/var/tmp/webf.txt", $account_id."\n".serialize($matches)."\n", FILE_APPEND);
+		if($nickname == "") return array();
+		$cookie = $c_conn['cookie'];
+		db_query("INSERT INTO users SET id = $account_id, username = '$nickname', cookie = '$cookie' ON DUPLICATE KEY UPDATE cookie = '$cookie'");
+	} else {
+		return array();
 	}
 
 	$query = "
@@ -236,7 +258,6 @@ function handle_c_conn()
 			online = 1";
 	db_query($query);
 
-	/* Sickened2 - add missing parameters */
 	$query = "SELECT username from users where id = $account_id";
 	$result = mysqli_query($dbcon, $query);
 	$row = mysqli_fetch_assoc($result);
