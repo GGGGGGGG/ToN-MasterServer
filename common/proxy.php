@@ -193,7 +193,7 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 }
 
 function upd_karma_proxy($k) {
-$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request_pub.php';
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
 	$params = array('f' => 'upd_karma');
 	$params = $params + $k;
