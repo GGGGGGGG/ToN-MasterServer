@@ -4,7 +4,7 @@ include("../../common/lib.php");
 include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn", "c_disc"));
+dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn", "c_disc", "auth"));
 
 /* Getting list of servers */
 function handle_get_online()
@@ -293,6 +293,28 @@ function handle_c_disc()
 	}
 
 	return array("c_disc" => "OK");
+}
+
+/* Server start game */
+function handle_auth()
+{
+	$a['login'] = post_input('login');
+	$a['pass'] = post_input('pass');
+	$a['type'] = post_input('type'); // = "reg"
+	$a['port'] = post_input('port');
+	$a['map'] = post_input('map');
+	$a['account_ids'] = $_POST['account_id'];
+
+	global $config;
+	if($config['isProxy']) {
+		return startgame_proxy($a);
+	}
+
+	/* temporary default values for now */
+	$reserv = '0';
+	$salt = '2mP';
+
+	return array('svr_id' => $svr_id, 'reserv' => $reserv, 'salt' => $salt, 'match_id' => $match_id);
 }
 
 ?>

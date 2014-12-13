@@ -4,7 +4,7 @@ include("../../common/lib.php");
 include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote"));
+dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote", "upd_karma"));
 
 /* Authentification */
 function handle_auth()
@@ -17,19 +17,7 @@ function handle_auth()
 	$acc_id = 0;
 	$cookie = "";
 	
-	if($config['isProxy']) {
-		$data = auth_proxy($nickname, $password);
-		if(array_key_exists("cookie", $data)) {
-			$acc_id = intval($data['account_id']);
-			$nickname = $data['nickname'];
-			$cookie = $data['cookie'];
-			$pquery = "INSERT INTO users (id, username, cookie) VALUES ({$acc_id}, '{$nickname}', '{$cookie}') ON DUPLICATE KEY UPDATE cookie='{$cookie}'";
-			db_query($pquery);
-			return $data;
-		}
-	}
-
-	/* account is invalid on official MS, so now check here */
+	/* first try verifying account on unofficial ms */
 
 	$query = "
 		SELECT 
@@ -41,14 +29,23 @@ function handle_auth()
 			users
 		WHERE 
 			username = '{$nickname}' 
-		";//AND 
+		AND 
+			CHAR_LENGTH(password) > 1";
 		//	password = SHA2('{$config['hash']}{$password}', 256)";
 
 	global $dbcon;
 	$result = mysqli_query($dbcon, $query);
-	if(!mysqli_num_rows($result) == 1) {
-		/* No user found, return error */
-		return array("error" => "Invalid login. :/");
+	if(mysqli_num_rows($result) != 1 && $config['isProxy']) {
+		/* account is invalid on unofficial MS, try official MS */
+		$data = auth_proxy($nickname, $password);
+		if(array_key_exists("cookie", $data)) {
+			$acc_id = intval($data['account_id']);
+			$nickname = $data['nickname'];
+			$cookie = $data['cookie'];
+			$pquery = "INSERT INTO users (id, username, cookie) VALUES ({$acc_id}, '{$nickname}', '{$cookie}') ON DUPLICATE KEY UPDATE cookie='{$cookie}'";
+			db_query($pquery);
+			return $data;
+		}
 	} else {
 		$data = mysqli_fetch_assoc($result);
 
@@ -111,13 +108,25 @@ function handle_clan_roster()
 	return array();		
 }
 
-/* Item list [empty] */
+/* Item list */
 function handle_item_list()
 {
-	return array();
-	$account_id = post_input("account_id");
 	global $config;
+
+	$account_id = post_input("account_id");
 	$data = array();
+
+	/* fetch from unofficial MS if user entry exists */
+	$id = intval($account_id);
+	$result = db_query("SELECT item_id,type,exp_date FROM items WHERE account_id = $id");
+	if(mysqli_num_rows($result) > 0) {
+		$data = array();
+		while($row = mysqli_fetch_assoc($result)) {
+			array_push($data, $row);
+		}
+		return $data;
+	}
+
 	if($config['isProxy']) {
 		$data = item_list_proxy($account_id);
 	}
@@ -269,4 +278,19 @@ function handle_cr_vote()
 	}
 }
 
+function handle_upd_karma()
+{
+	$k['account_id'] = post_input('account_id');
+	$k['target_id'] = post_input('target_id');
+	$k['match_id'] = post_input('match_id');
+	$k['do'] = post_input('do');
+	$k['reason'] = post_input('reason');
+
+	global $config;
+	if($config['isProxy']) {
+		return upd_karma_proxy($k);
+	}
+
+	return array('karma' => 'OK');
+}
 ?>
