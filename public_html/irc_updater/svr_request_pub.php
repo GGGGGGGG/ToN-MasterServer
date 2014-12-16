@@ -172,11 +172,11 @@ function handle_set_online_ids()
 		$set_online_ids['login'] = post_input("login");
 		$set_online_ids['pass'] = post_input("pass");
 		$set_online_ids['num_conn'] = post_input("num_conn");
-		$account_id = array();
-		for($i = 0; $i < intval($num_conn); ++$i) {
-			$account_id[$i] = post_input("account_id[{$i}]");
-		}
-		$set_online_ids['account_id'] = $account_id;
+		//$account_id = array();
+		//for($i = 0; $i < intval($num_conn); ++$i) {
+		//	$account_id[$i] = post_input("account_id[{$i}]");
+		//}
+		$set_online_ids['account_id'] = $_POST['account_id'];
 		$data = set_online_ids_proxy($set_online_ids);
 		return $data;
 	}

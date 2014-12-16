@@ -1,6 +1,18 @@
 <?php
 require_once 'HTTP/Request2.php';
 
+function friend_info_proxy($nickname) {
+$masterserver = 'http://masterserver.savage2.s2games.com/friend_info.php?nickname=$nickname';
+	$r = new Http_Request2($masterserver, Http_Request2::METHOD_GET);
+	try {
+		$body = $r->send()->getBody();
+		return $body;
+	} catch (Http_Request2_Exception $ex) {
+		//echo $ex;
+	}
+	return "";
+}
+
 function auth_proxy($email, $password) {
 $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
@@ -80,19 +92,20 @@ $masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request
 }
 
 function set_online_ids_proxy($set_online_ids) {
-$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/irc_requester.php';
+$masterserver = 'http://masterserver.savage2.s2games.com/irc_updater/svr_request_pub.php';
 	$r = new Http_Request2($masterserver, Http_Request2::METHOD_POST);
 	$params = array('f' => 'set_online_ids');
-	while(list($key, $value) = each($set_online_ids)) {
-		if($value != "") {
-			if(strcmp($key, "account_id") !== 0)
-				$params[$key] = $value;
-			else {
-				for($i = 0; $i < count($set_online_ids['account_id']); ++$i)
-					$params["account_id[{$i}]"] = $set_online_ids['account_id'][$i];
-			}
-		}
-	}
+	//while(list($key, $value) = each($set_online_ids)) {
+	//	if($value != "") {
+	//		if(strcmp($key, "account_id") !== 0)
+	//			$params[$key] = $value;
+	//		else {
+	//			for($i = 0; $i < count($set_online_ids['account_id']); ++$i)
+	//				$params["account_id[{$i}]"] = $set_online_ids['account_id'][$i];
+	//		}
+	//	}
+	//}
+	$params = $params + $set_online_ids;
 	$r->addPostParameter($params);
 	try {
 		$body = $r->send()->getBody();
