@@ -294,13 +294,13 @@ UNLOCK TABLES;
 
 -- Sickened2: buddies table
 CREATE TABLE `buddies` (
+   `source_id` int(11) NOT NULL,
    `target_id` int(11) NOT NULL,
    `note` varchar(50) DEFAULT NULL,
    `clan_name` varchar(50) DEFAULT NULL,
    `clan_tag` varchar(50) DEFAULT NULL,
    `clan_img` varchar(50) DEFAULT NULL,
-   `avatar` varchar(50) DEFAULT NULL,
-   PRIMARY KEY (`target_id`)
+   `avatar` varchar(50) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- Sickened2
