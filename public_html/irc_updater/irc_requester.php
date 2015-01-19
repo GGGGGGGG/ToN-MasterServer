@@ -216,6 +216,7 @@ function handle_new_buddy()
 				target_id = $target_id";
 		mysql_query($query);
 		/* TODO: Find out what notification is */
+		/* notification looks like a global value that is returned to confirm addition or removal of buddy, then incremented. Returned as n, n+1 */
 		return array(
 			"new_buddy" => "ok",
 			"notification" => array(1,2));

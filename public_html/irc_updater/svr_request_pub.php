@@ -131,7 +131,7 @@ file_put_contents("/var/tmp/qwerty", $ip."\n".serialize($data)."\n", FILE_APPEND
 			name = '$name', description = '$desc', minlevel = $minlevel,
 			maxlevel = $maxlevel, updated = NOW()
 		ON DUPLICATE KEY UPDATE
-			official = '$official', id = $server_id, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
+			official = '$official', id = $server_id, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW()";
 
@@ -176,7 +176,8 @@ function handle_set_online_ids()
 		//for($i = 0; $i < intval($num_conn); ++$i) {
 		//	$account_id[$i] = post_input("account_id[{$i}]");
 		//}
-		$set_online_ids['account_id'] = $_POST['account_id'];
+		//if(intval($set_online_ids['num_conn']) > 0)
+			$set_online_ids['account_id'] = $_POST['account_id'];
 		$data = set_online_ids_proxy($set_online_ids);
 		return $data;
 	}
