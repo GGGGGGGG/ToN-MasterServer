@@ -1,7 +1,8 @@
 <?php
-
-mysql_connect('localhost', 'tools', '2xmqDDm5PWW?HxTwrPHvCf');
-mysql_select_db('tools');
+$con = mysqli_connect('localhost', 'tools', trim(file_get_contents('/var/www/masterserver1.talesofnewerth.com/toolsdbp')), 'tools');
+if(mysqli_connect_errno()) {
+  die();
+}
 
 $action = $_REQUEST['action'];
 $id = mysql_real_escape_string($_REQUEST['matchid']);
@@ -42,7 +43,7 @@ if($action == 'reportGame' && $spamprotection == $spamtest && strlen($id) > 0)
 {
 
 	$sql = "INSERT INTO `tools`.`reports` (`id`, `match_id`, `time`, `gametime`, `reason`, `reporter`, `reporter_ip`) VALUES (NULL, '$id', NOW(), '$time', '$reason', '$reporter', '$userip')";
-	$handle = mysql_query($sql) or die ("Reporting failed");
+	$handle = mysqli_query($con, $sql) or die ("Reporting failed");
 	print("Report worked. Thank you.\n<br>");
 	print('Filldata for curl. Filldata for curl. Filldata for curl. Filldata for curl.');
 	print('Filldata for curl. Filldata for curl. Filldata for curl. Filldata for curl.');
@@ -119,7 +120,7 @@ else if($password == $secret && $action == 'listReports')
 	
 
 	$sql = 'SELECT match_id, count( match_id ) AS counted, MAX(time) AS maxtime FROM reports GROUP BY match_id ORDER BY maxtime DESC, counted DESC';
-	$handle = mysql_query($sql);
+	$handle = mysqli_query($con, $sql);
 
 	print('<html><header><title>Reports overviews</title></header><html><body><table border="1">');
 	print("
@@ -131,7 +132,7 @@ else if($password == $secret && $action == 'listReports')
 	</tr>
 	");
 
-	while($result = mysql_fetch_row($handle))
+	while($result = mysqli_fetch_row($handle))
 	{
 		print("
 		<tr>
@@ -150,7 +151,7 @@ else if($password == $secret && $action == 'viewFullReport' && strlen($id) > 1)
 {
 	setcookie('report_password', $cookiePassword, time()+2592000); //cookie expires after 30 days
 	$sql = "SELECT * FROM reports WHERE match_id = '$id' ORDER BY time DESC";	
-	$handle = mysql_query($sql);
+	$handle = mysqli_query($con, $sql);
 
 	print('<html><header><title>Detailed Report</title></header><html><body><table border="1">');
 	print("
@@ -164,7 +165,7 @@ else if($password == $secret && $action == 'viewFullReport' && strlen($id) > 1)
 		<td>reporter_ip</td>
 	</tr>
 	");
-	while($result = mysql_fetch_row($handle))
+	while($result = mysqli_fetch_row($handle))
 	{
 		print("
 		<tr>
@@ -186,7 +187,7 @@ else if($password == $secret && $action == 'allReports')
 {
 	setcookie('report_password', $cookiePassword, time()+2592000); //cookie expires after 30 days
 	$sql = 'SELECT * FROM reports ORDER BY time DESC';
-	$handle = mysql_query($sql);
+	$handle = mysqli_query($con, $sql);
 	
 	print('<html><header><title>Full reports Report</title></header><html><body><a href="./report_match.php?action=listReports&cookie_work_around=3fff9689ec2ba46e12997fcc9944059cb8ff8345">Back</a><table border="1">');
 	print("
@@ -200,7 +201,7 @@ else if($password == $secret && $action == 'allReports')
 		<td>reporter_ip</td>
 	</tr>
 	");
-	while($result = mysql_fetch_row($handle))
+	while($result = mysqli_fetch_row($handle))
 	{
 		print("
 		<tr>
