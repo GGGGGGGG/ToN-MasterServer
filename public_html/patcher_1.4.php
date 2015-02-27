@@ -12,12 +12,9 @@ $query = "select concat(major, '.', minor, '.', build, '.', revision) as ver
 	from patches.version
 	order by date limit 1";
 	
-$result = db_query($query);
+$result = patchesdb_query($query);
 
-if(mysqli_num_rows($result) != 1) {
-	/* Something's terribly wrong */
-	return;	
-} else {
+if(mysqli_num_rows($result) == 1) {
 	/* Return user data */
 	$data = mysqli_fetch_assoc($result);
 	$curver = $data["ver"];
@@ -29,7 +26,7 @@ if(mysqli_num_rows($result) != 1) {
 		$query = "select name, concat(major, '.', minor, '.', build, '.', revision) as version, os, arch from patches.version_check 
 			where concat(major, '.', minor, '.', build, '.', revision)=\"$curver\" 
 			ORDER BY name";
-		$result = db_query($query);
+		$result = patchesdb_query($query);
 		$nRows = mysqli_num_rows($result);
 		$res = array();
 		for($i=0; $i < $nRows; ++$i) {
@@ -44,4 +41,7 @@ if(mysqli_num_rows($result) != 1) {
 		echo serialize($res);
 	}
 }
+
+patchesdb_close();
+
 ?>
