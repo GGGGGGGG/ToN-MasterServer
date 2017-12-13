@@ -30,15 +30,12 @@ if(mysqli_num_rows($result) == 1) {
 		$nRows = mysqli_num_rows($result);
 		$res = array();
 		for($i=0; $i < $nRows; ++$i) {
-			if($clientos == $data["os"])
-			{
-				$data = mysqli_fetch_assoc($result);
-				$name = $data["name"];
-				$version = $data["version"];
-				$os = $data["os"];
-				$arch = $data["arch"];
-				array_push($res, array("name" => $name, "version" => $version, "os" => $os, "arch" => $arch));
-			}
+			$data = mysqli_fetch_assoc($result);
+			$name = $data["name"];
+			$version = $data["version"];
+			$os = $data["os"];
+			$arch = $data["arch"];
+			array_push($res, array("name" => $name, "version" => $version, "os" => $os, "arch" => $arch));
 		}
 		$res["version"] = $curver;
 		echo serialize($res);

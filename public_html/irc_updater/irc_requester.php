@@ -137,10 +137,17 @@ function handle_item_list()
 function handle_get_all_stats()
 {
 	$account_ids = $_POST["account_id"];
-	global $config;
+	$query = "SELECT user, SUM(exp) as exp, SUM(kills) as kills, SUM(deaths) as deaths, SUM(assists) as assists, 
+SUM(souls) as souls, SUM(razed) as razed, SUM(pdmg) as pdmg, SUM(bdmg) as bdmg, SUM(npc) as npc, SUM(hp_healed) as hp_healed, SUM(res) as res, 
+SUM(gold) as gold, SUM(hp_repaired) as hp_repaired, SUM(secs) as secs
+FROM actionplayers
+WHERE user = '{$account_ids}'";
 	$data = array();
-	if($config['isProxy']) {
-		$data = get_all_stats_proxy($account_ids);
+	$result = db_query($query);
+	if(mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_assoc($result)) {
+			array_push($data, $row);
+		}
 	}
 	return $data;
 }
