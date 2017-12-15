@@ -5,15 +5,15 @@ if(mysqli_connect_errno()) {
 }
 
 $action = $_REQUEST['action'];
-$id = mysql_real_escape_string($_REQUEST['matchid']);
-$time = mysql_real_escape_string($_REQUEST['time']);
-$reason = mysql_real_escape_string($_REQUEST['reason']);
+$id = mysqli_real_escape_string($_REQUEST['matchid']);
+$time = mysqli_real_escape_string($_REQUEST['time']);
+$reason = mysqli_real_escape_string($_REQUEST['reason']);
 $password = $_REQUEST['access_verifier'];
-$userip = mysql_real_escape_string($_SERVER['REMOTE_ADDR']);
-$reporter = mysql_real_escape_string($_REQUEST['reporter']);
+$userip = mysqli_real_escape_string($_SERVER['REMOTE_ADDR']);
+$reporter = mysqli_real_escape_string($_REQUEST['reporter']);
 $spamprotection = 'nospamplease';
-$spamtest = mysql_real_escape_string($_REQUEST['spamtest']);
-$cookieWorkAround = mysql_real_escape_string($_REQUEST['cookie_work_around']);
+$spamtest = mysqli_real_escape_string($_REQUEST['spamtest']);
+$cookieWorkAround = mysqli_real_escape_string($_REQUEST['cookie_work_around']);
 
 
 $secret = '3fff9689ec2ba46e12997fcc9944059cb8ff8345';

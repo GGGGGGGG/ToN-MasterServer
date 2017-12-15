@@ -169,7 +169,7 @@ function handle_nick2id()
 	$data = array();
 	foreach($nicknames as $nick) {
 		/* TODO: Optimize this by creating a single query for all nicknames */
-		$safe_nick = mysql_real_escape_string($nick);
+		$safe_nick = mysqli_real_escape_string($nick);
 
 		/* Search nickname in database */
 		$query = "
@@ -179,11 +179,11 @@ function handle_nick2id()
 				users
 			WHERE
 				username = '{$safe_nick}'";
-		$result = mysql_query($query);
+		$result = mysqli_query($query);
 
 		/* Save in output (nickname -> id) */
-		if(mysql_num_rows($result) == 1) {
-			$row = mysql_fetch_assoc($result);
+		if(mysqli_num_rows($result) == 1) {
+			$row = mysqli_fetch_assoc($result);
 			$data[$nick] = "{$row["id"]}";
 		}
 	}
@@ -211,9 +211,9 @@ function handle_new_buddy()
 			users
 		WHERE
 			id IN ($account_id, $buddy_id)";
-	$result = mysql_query($query);
+	$result = mysqli_query($query);
 	
-	if(mysql_num_rows($result) == 2) {
+	if(mysqli_num_rows($result) == 2) {
 		/* Insert buddy entry */
 		$query = "
 			INSERT INTO
@@ -221,7 +221,7 @@ function handle_new_buddy()
 			SET
 				source_id = $account_id,
 				target_id = $target_id";
-		mysql_query($query);
+		mysqli_query($query);
 		/* TODO: Find out what notification is */
 		/* notification looks like a global value that is returned to confirm addition or removal of buddy, then incremented. Returned as n, n+1 */
 		return array(
@@ -251,7 +251,7 @@ function handle_remove_buddy()
 		WHERE
 			source_id = $account_id
 		AND target_id = $target_id";
-	mysql_query($query);
+	mysqli_query($query);
 	
 	/* TODO: Find out what notification is */
 	return array(

@@ -80,7 +80,7 @@ function handle_end_game()
 				`avg_sf` = {$team['avg_sf']},
 				`commander` = {$team['commander']}";
 		db_query($query);
-		$team_ids[$index] = mysql_insert_id();
+		$team_ids[$index] = mysqli_insert_id();
 	}
 
 	/* Insert player stats */

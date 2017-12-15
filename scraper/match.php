@@ -129,7 +129,7 @@ while(true) {
                     `match` = {$matchid},
                     `race` = '{$race}'";
             db_query($query);
-            $teamids[$i++] = mysql_insert_id();
+            $teamids[$i++] = mysqli_insert_id();
         }
 
         /* Commanders */

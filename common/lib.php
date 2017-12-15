@@ -90,7 +90,7 @@ function db_query($query) {
 function db_query_array($query) {
     $result = db_query($query);
     $array = array();
-    while ($line = mysql_fetch_array($result)) {
+    while ($line = mysqli_fetch_array($result)) {
         $array[$line[0]] = $line[1];
     }
     return $array;
@@ -110,7 +110,7 @@ function db_escape($values) {
 		$values = $values ? 1 : 0;
 	}
 	else if (!is_numeric($values)) {
-		$values = mysql_real_escape_string($values);
+		$values = mysqli_real_escape_string($values);
 	}
 	return $values;
 }
