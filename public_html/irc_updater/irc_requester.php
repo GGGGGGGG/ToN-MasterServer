@@ -137,7 +137,7 @@ function handle_item_list()
 function handle_get_all_stats()
 {
 	$account_ids = $_POST["account_id"];
-	$query = "SELECT overall_r, sf, lf, level, clans.*, karma, playerstats.* from playerinfos JOIN playerstats USING (account_id) WHERE {$account_ids}";
+    $query = "SELECT overall_r, sf, lf, LEVEL, clans.*, karma, playerstats.* FROM playerinfos JOIN playerstats JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id AND playerstats.account_id = {$account_ids}";
 	$data = array();
 	$result = db_query($query);
 	if(mysqli_num_rows($result) > 0) {
