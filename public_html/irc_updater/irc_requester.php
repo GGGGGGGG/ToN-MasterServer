@@ -90,16 +90,18 @@ function handle_auth()
 		} else {
 			$data["buddy"] = array();
 			while($row = mysqli_fetch_assoc($result)) {
-				$data["buddy"][$row["buddy_id"]] = $buddy;
+				$data["buddy"][$row["buddy_id"]] = $row;
 			}
 		}
 
+
         // stats
-        $query = "SELECT overall_r, sf, lf, LEVEL, clans.*, karma, playerstats.* FROM playerinfos JOIN playerstats JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id AND playerstats.account_id = {$data['account_id']}";
+        $query = "SELECT overall_r, sf, lf, level, clans.*, karma FROM playerinfos JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id = {$data['account_id']}";
         $result = db_query($query);
+        $data["player_stats"] = array();
         if(mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_assoc($result)) {
-                array_push($data["player_stats"], $row);
+                $data["player_stats"][$row["account_id"]] = $row;
             }
         }
 		
