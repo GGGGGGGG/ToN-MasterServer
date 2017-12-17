@@ -4,7 +4,7 @@ include("../../common/lib.php");
 include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote", "upd_karma"));
+dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "get_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote", "upd_karma"));
 
 /* Authentification */
 function handle_auth()
@@ -155,6 +155,21 @@ function handle_get_all_stats()
 	return $data;
 }
 
+function handle_get_stats()
+{
+    global $dbcon;
+    $account_ids = mysqli_real_escape_string($dbcon, $_POST["account_id"]);
+    $query = "SELECT overall_r, sf, lf, LEVEL, clans.*, karma, playerstats.* FROM playerinfos JOIN playerstats JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id AND playerstats.account_id = {$account_ids}";
+    $data = array();
+    $result = db_query($query);
+    if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            array_push($data, $row);
+        }
+    }
+    return $data;
+}
+
 /* Get account ID for nickname */
 function handle_nick2id()
 {
@@ -205,7 +220,7 @@ function handle_new_buddy()
 			users
 		WHERE
 			id IN ($account_id, $buddy_id)";
-	$result = mysqli_query($query);
+	$result = mysqli_query($dbcon, $query);
 	
 	if(mysqli_num_rows($result) == 2) {
 		/* Insert buddy entry */
@@ -240,7 +255,7 @@ function handle_remove_buddy()
 		WHERE
 			source_id = $account_id
 		AND target_id = $buddy_id";
-	mysqli_query($query);
+	mysqli_query($dbcon, $query);
 	
 	/* TODO: Find out what notification is */
 	return array(
