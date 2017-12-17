@@ -10,9 +10,10 @@ dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nic
 function handle_auth()
 {
 	global $config;
+	global $dbcon;
 	
-	$nickname = post_input("email");
-	$password = post_input("password");
+	$nickname = mysqli_real_escape_string($dbcon, post_input("email"));
+	$password = mysqli_real_escape_string($dbcon, post_input("password"));
 
 	$acc_id = 0;
 	$cookie = "";
@@ -31,9 +32,7 @@ function handle_auth()
 			username = '{$nickname}' 
 		AND 
 			CHAR_LENGTH(password) > 1";
-		//	password = SHA2('{$config['hash']}{$password}', 256)";
 
-	global $dbcon;
 	$result = mysqli_query($dbcon, $query);
 	if(mysqli_num_rows($result) != 1 && $config['isProxy']) {
 		/* account is invalid on unofficial MS, try official MS */
@@ -122,9 +121,8 @@ function handle_clan_roster()
 /* Item list */
 function handle_item_list()
 {
-	global $config;
-
-	$account_id = post_input("account_id");
+	global $dbcon;
+	$account_id = mysqli_real_escape_string($dbcon, post_input("account_id"));
 	$data = array();
 
 	/* fetch from unofficial MS if user entry exists */
@@ -138,16 +136,14 @@ function handle_item_list()
 		return $data;
 	}
 
-	if($config['isProxy']) {
-		$data = item_list_proxy($account_id);
-	}
 	return $data;
 }
 
 /* All stats */
 function handle_get_all_stats()
 {
-	$account_ids = $_POST["account_id"];
+	global $dbcon;
+	$account_ids = mysqli_real_escape_string($dbcon, $_POST["account_id"]);
     $query = "SELECT overall_r, sf, lf, LEVEL, clans.*, karma, playerstats.* FROM playerinfos JOIN playerstats JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id AND playerstats.account_id = {$account_ids}";
 	$data = array();
 	$result = db_query($query);
@@ -162,21 +158,17 @@ function handle_get_all_stats()
 /* Get account ID for nickname */
 function handle_nick2id()
 {
+	global $dbcon;
 	if(!isset($_POST["nickname"]) or !is_array($_POST["nickname"]))
 		return array();
-		
-	$nicknames = $_POST["nickname"];
 
-	global $config;
-	if($config['isProxy']) {
-		$data = nick2id_proxy($nicknames);
-		return $data;
-	}
+	$nicknames = mysqli_real_escape_string($dbcon, $_POST["nickname"]);
+
 	
 	$data = array();
 	foreach($nicknames as $nick) {
 		/* TODO: Optimize this by creating a single query for all nicknames */
-		$safe_nick = mysqli_real_escape_string($nick);
+		$safe_nick = mysqli_real_escape_string($dbcon, $nick);
 
 		/* Search nickname in database */
 		$query = "
@@ -201,14 +193,9 @@ function handle_nick2id()
 /* Add a new buddy */
 function handle_new_buddy()
 {
-	$account_id = intval(post_input("account_id"));
-	$buddy_id = intval(post_input("buddy_id"));
-	
-	global $config;
-	if($config['isProxy']) {
-		$data = new_buddy_proxy($account_id, $buddy_id);
-		return $data;
-	}
+	global $dbcon;
+	$account_id = mysqli_real_escape_string($dbcon, intval(post_input("account_id")));
+	$buddy_id = mysqli_real_escape_string($dbcon, intval(post_input("buddy_id")));
 
 	/* See if these are two valid accounts */
 	$query = "
@@ -242,14 +229,9 @@ function handle_new_buddy()
 /* Remove a buddy */
 function handle_remove_buddy()
 {
-	$account_id = intval(post_input("account_id"));
-	$buddy_id = intval(post_input("buddy_id"));
-	
-	global $config;
-	if($config['isProxy']) {
-		$data = remove_buddy_proxy($account_id, $buddy_id);
-		return $data;
-	}
+	global $dbcon;
+	$account_id = mysqli_real_escape_string($dbcon, intval(post_input("account_id")));
+	$buddy_id = mysqli_real_escape_string($dbcon, intval(post_input("buddy_id")));
 
 	/* Insert buddy entry */
 	$query = "
@@ -257,7 +239,7 @@ function handle_remove_buddy()
 			buddies
 		WHERE
 			source_id = $account_id
-		AND target_id = $target_id";
+		AND target_id = $buddy_id";
 	mysqli_query($query);
 	
 	/* TODO: Find out what notification is */
@@ -268,11 +250,12 @@ function handle_remove_buddy()
 
 function handle_cr_vote()
 {
-	$account_id = intval(post_input("account_id"));
-	$comm_id = intval(post_input("comm_id"));
-	$match_id = intval(post_input("match_id"));
-	$vote = intval(post_input("vote"));
-	$reason = post_input("reason");
+	global $dbcon;
+	$account_id = mysqli_real_escape_string($dbcon, intval(post_input("account_id")));
+	$comm_id = mysqli_real_escape_string($dbcon, intval(post_input("comm_id")));
+	$match_id = mysqli_real_escape_string($dbcon, intval(post_input("match_id"));
+	$vote = mysqli_real_escape_string($dbcon, intval(post_input("vote")));
+	$reason = mysqli_real_escape_string($dbcon, post_input("reason"));
 	
 	/* TODO: Check if user was in this game */
 	$query = "
