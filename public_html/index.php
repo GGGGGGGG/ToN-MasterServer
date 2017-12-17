@@ -8,7 +8,7 @@ $body = "\t<tr>\n".
 	"\t\t<td>Description</td>\n".
 	"\t</tr>\n\n\n";
 $nOnline = 0;
-$result = db_query("select id, name, ip, port, num_conn, max_conn, description from server WHERE updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
+$result = db_query("select id, name, ip, port, num_conn, max_conn, description from servers WHERE updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 while($row = mysqli_fetch_assoc($result)) {
 	$body = $body.
 		"\t<tr>\n".

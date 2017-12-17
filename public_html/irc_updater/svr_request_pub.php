@@ -66,7 +66,7 @@ function handle_set_online()
 
 	/* Create in database */
 	$query = "
-		INSERT INTO server SET 
+		INSERT INTO servers SET 
 			official = '$official', id = '$server_id', ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$desc', minlevel = $minlevel,
 			maxlevel = $maxlevel, updated = NOW()
@@ -98,7 +98,7 @@ function handle_set_online_ids()
 	$num_conn = intval(post_input("num_conn"));
 	$login = post_input("login");
 	$query = "
-		UPDATE server SET
+		UPDATE servers SET
 			num_conn = $num_conn,
 			updated = NOW()
 		WHERE

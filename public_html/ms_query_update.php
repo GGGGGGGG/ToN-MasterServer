@@ -2,7 +2,7 @@
 include("../common/lib.php");
 $nOnline = 0;
 $data = array();
-$result = db_query("select id, name, ip, port, num_conn AS numUsers, max_conn AS maxUsers, official, description from server WHERE updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
+$result = db_query("select id, name, ip, port, num_conn AS numUsers, max_conn AS maxUsers, official, description from servers WHERE updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 while($row = mysqli_fetch_assoc($result)) {
 	$row['location'] = "";
 	$row['currentGameTime'] = "";
