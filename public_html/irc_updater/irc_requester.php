@@ -1,7 +1,6 @@
 <?php
 
 include("../../common/lib.php");
-include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "get_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote", "upd_karma"));
@@ -9,18 +8,15 @@ dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "get
 /* Authentification */
 function handle_auth()
 {
-	global $config;
-	global $dbcon;
-	
-	$nickname = mysqli_real_escape_string($dbcon, post_input("email"));
-	$password = mysqli_real_escape_string($dbcon, post_input("password"));
+    global $config;
+    global $dbcon;
 
-	$acc_id = 0;
-	$cookie = "";
-	
-	/* first try verifying account on unofficial ms */
+    $nickname = mysqli_real_escape_string($dbcon, post_input("email"));
+    $password = mysqli_real_escape_string($dbcon, post_input("password"));
 
-	$query = "
+    /* first try verifying account on unofficial ms */
+
+    $query = "
 		SELECT 
 			users.username AS nickname,
 			users.id AS account_id,
@@ -33,39 +29,27 @@ function handle_auth()
 		AND 
 			CHAR_LENGTH(password) > 1";
 
-	$result = mysqli_query($dbcon, $query);
-	if(mysqli_num_rows($result) != 1 && $config['isProxy']) {
-		/* account is invalid on unofficial MS, try official MS */
-		$data = auth_proxy($nickname, $password);
-		if(array_key_exists("cookie", $data)) {
-			$acc_id = intval($data['account_id']);
-			$nickname = $data['nickname'];
-			$cookie = $data['cookie'];
-			$pquery = "INSERT INTO users (id, username, cookie) VALUES ({$acc_id}, '{$nickname}', '{$cookie}') ON DUPLICATE KEY UPDATE cookie='{$cookie}'";
-			db_query($pquery);
-			return $data;
-		}
-	} else {
-		$data = mysqli_fetch_assoc($result);
+    $result = mysqli_query($dbcon, $query);
+    $data = mysqli_fetch_assoc($result);
 
-		/* verify password */
-		$passwordhash = $data['passwordhash'];
-		$authSuccess = password_verify($password, $passwordhash);
-		if(!$authSuccess)
-			return array("error" => "Invalid login. :/");
+    /* verify password */
+    $passwordhash = $data['passwordhash'];
+    $authSuccess = password_verify($password, $passwordhash);
+    if (!$authSuccess)
+        return array("error" => "Invalid login. :/");
 
-		/* generate cookie for user and add to DB */
-		$cookie = md5(uniqid(rand(), true));
-		$data["cookie"] = $cookie; 
+    /* generate cookie for user and add to DB */
+    $cookie = md5(uniqid(rand(), true));
+    $data["cookie"] = $cookie;
 
-		$pquery = "UPDATE users SET cookie='{$cookie}' WHERE username='{$nickname}'";
-		db_query($pquery);
+    $pquery = "UPDATE users SET cookie='{$cookie}' WHERE username='{$nickname}'";
+    db_query($pquery);
 
-		/* Return user data */
-		$data["account_type"] = 1;	
-		
-		/* Buddy list */
-		$query = "
+    /* Return user data */
+    $data["account_type"] = 1;
+
+    /* Buddy list */
+    $query = "
 			SELECT
 				users.username AS nickname,
 				users.id AS buddy_id,
@@ -82,34 +66,34 @@ function handle_auth()
 				buddies.target_id = users.id
 			WHERE
 				users.source_id = {$data['account_id']}";
-		$result = mysqli_query($dbcon, $query);
-		
-		if(mysqli_num_rows($result) == 0) {
-			$data["buddy"] = array("error" => "No buddies found.");
-		} else {
-			$data["buddy"] = array();
-			while($row = mysqli_fetch_assoc($result)) {
-				$data["buddy"][$row["buddy_id"]] = $row;
-			}
-		}
+    $result = mysqli_query($dbcon, $query);
 
-
-        // stats
-        $query = "SELECT overall_r, sf, lf, level, clans.*, karma FROM playerinfos JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id = {$data['account_id']}";
-        $result = db_query($query);
-        $data["player_stats"] = array();
-        if(mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_assoc($result)) {
-                $data["player_stats"][$row["account_id"]] = $row;
-            }
+    if (mysqli_num_rows($result) == 0) {
+        $data["buddy"] = array("error" => "No buddies found.");
+    } else {
+        $data["buddy"] = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data["buddy"][$row["buddy_id"]] = $row;
         }
-		
-		/* Stats */
-		//$data["player_stats"] = array($data['account_id'] => array());
-		//$data["ranked_stats"] = array($data['account_id'] => array());
-		
-		return $data;
-	}
+    }
+
+
+    // stats
+    $query = "SELECT overall_r, sf, lf, level, clans.*, karma FROM playerinfos JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id = {$data['account_id']}";
+    $result = db_query($query);
+    $data["player_stats"] = array();
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data["player_stats"][$row["account_id"]] = $row;
+        }
+    }
+
+    /* Stats */
+    //$data["player_stats"] = array($data['account_id'] => array());
+    $data["ranked_stats"] = array($data['account_id'] => array());
+
+    return $data;
+
 }
 
 /* Clan roster [empty] */
@@ -229,7 +213,7 @@ function handle_new_buddy()
 				buddies
 			SET
 				source_id = $account_id,
-				target_id = $target_id";
+				target_id = $buddy_id";
 		mysqli_query($query);
 		/* TODO: Find out what notification is */
 		/* notification looks like a global value that is returned to confirm addition or removal of buddy, then incremented. Returned as n, n+1 */
