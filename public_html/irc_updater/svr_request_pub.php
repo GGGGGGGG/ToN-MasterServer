@@ -1,7 +1,6 @@
 <?php
 
 include("../../common/lib.php");
-include("../../common/proxy.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn", "c_disc", "auth"));
@@ -23,12 +22,6 @@ function handle_get_online()
 	$data = array();
 	while($row = mysqli_fetch_assoc($result)) {
 		$data[$row['id']] = $row;
-	}
-
-	global $config;
-	if($config['isProxy']) {
-		$officialdata = get_online_proxy();
-		$data = array_merge(array_diff_key($officialdata, $data), $data);
 	}
 
 	return $data;
@@ -58,59 +51,6 @@ function handle_set_online()
 	global $config;
 	$data = array();
 	$isOfficial = False;
-	if($config['isProxy']) {
-		// try official server auth method first
-		$set_online['ip'] = $ip;//post_input("ip");
-		$set_online['port'] = post_input("port");
-		$set_online['num_conn'] = post_input("num_conn");
-		$set_online['num_max'] = post_input("num_max");
-		$set_online['name'] = post_input("name");
-		$set_online['desc'] = post_input("desc");
-		$set_online['status'] = post_input("status");
-		$set_online['minkarma'] = post_input("minkarma");
-		$set_online['location'] = post_input("location");
-		$set_online['cgt'] = post_input("cgt");
-		$set_online['next_map'] = post_input("next_map");
-		$set_online['map'] = post_input("map");
-		$set_online['login'] = post_input("login");
-		$set_online['pass'] = post_input("pass");
-		$set_online['minlevel'] = post_input("minlevel");
-		$set_online['maxlevel'] = post_input("maxlevel");
-		$data = set_online_proxy($set_online);
-file_put_contents("/var/tmp/qwerty", "officialtest\n".$ip."\n".$login."\n".serialize($data)."\n", FILE_APPEND);
-		$server_id = 0;
-		if(array_key_exists("authenticate", $data)) {
-file_put_contents("/var/tmp/qwerty", $ip."\n".serialize($data)."\n", FILE_APPEND);
-			// official update method failed
-			// try regular non-official user server
-			$data = auth_proxy($login, $pass);
-			if(!array_key_exists('cookie', $data))
-				return array();
-		} else {
-			$isOfficial = True;
-		}
-
-/*
-        $r->addPostParameter(array('f' => 'set_online',
-                                'ip' => $set_online['ip'],
-                                'port' => $set_online['port'],
-                                'num_conn' => $set_online['num_conn'],
-                                'num_max' => $set_online['num_max'],
-                                'name' => $set_online['name'],
-                                'desc' => $set_online['desc'],
-
-                                'status' => $set_online['status'],
-                                'minkarma' => $set_online['minkarma'],
-                                'location' => $set_online['location'],
-                                'cgt' => $set_online['cgt'],
-                                'next_map' => $set_online['next_map'],
-                                'map' => $set_online['map'],
-                                'login' => $set_online['login'],
-                                'pass' => $set_online['pass'],
-                                'minlevel' => $set_online['minlevel']));
-
-*/
-	}
 
 	if($isOfficial) {
 		// this shouldn't happen! generate server id if not returned by official masterserver
@@ -137,10 +77,7 @@ file_put_contents("/var/tmp/qwerty", $ip."\n".serialize($data)."\n", FILE_APPEND
 
 	global $dbcon;		
 	mysqli_query($dbcon, $query);
-	
-	if($config['isProxy'] && $isOfficial) {
-		return $data;
-	}
+
 
 	/* Send id in answer */
 	$id = mysqli_insert_id($dbcon);
@@ -166,21 +103,6 @@ function handle_set_online_ids()
 			updated = NOW()
 		WHERE
 			login = '$login'";
-			
-	global $config;
-	if($config['isProxy']) {
-		$set_online_ids['login'] = post_input("login");
-		$set_online_ids['pass'] = post_input("pass");
-		$set_online_ids['num_conn'] = post_input("num_conn");
-		//$account_id = array();
-		//for($i = 0; $i < intval($num_conn); ++$i) {
-		//	$account_id[$i] = post_input("account_id[{$i}]");
-		//}
-		//if(intval($set_online_ids['num_conn']) > 0)
-			$set_online_ids['account_id'] = $_POST['account_id'];
-		$data = set_online_ids_proxy($set_online_ids);
-		return $data;
-	}
 
 	/* Return empty */
 	return array();
@@ -207,7 +129,6 @@ function handle_shutdown()
 /* User joins a server */
 function handle_c_conn() 
 {
-	global $config;
 	global $dbcon;
 
 	$account_id = intval(post_input("account_id"));
@@ -225,22 +146,6 @@ function handle_c_conn()
 	$row = mysqli_fetch_assoc($result);
 	if(count($row) != 0) {
 		$client_name = $row['username'];
-	} elseif($config['isProxy']) {
-		/* second attempt using official MS */
-		$data = c_conn_proxy($c_conn);
-		if(!array_key_exists('c_conn', $data))
-			return array();
-		/* verification succeeded */
-		// fetch nickname using id by webextraction (see chatserver)
-		$url = "http://savage2.com/en/player_stats.php?id={$account_id}";
-		$pattern = "/<span class=g16><b>(\w+)<\/b>/";
-		$html = file_get_contents($url);
-		preg_match_all($pattern, $html, $matches);
-		$nickname = $matches[1][0];
-file_put_contents("/var/tmp/webf.txt", $account_id."\n".serialize($matches)."\n", FILE_APPEND);
-		if($nickname == "") return array();
-		$cookie = $c_conn['cookie'];
-		db_query("INSERT INTO users SET id = $account_id, username = '$nickname', cookie = '$cookie' ON DUPLICATE KEY UPDATE cookie = '$cookie'");
 	} else {
 		return array();
 	}
@@ -282,16 +187,11 @@ function handle_c_disc()
 			updated = NOW()
 		WHERE
 			user = {$account_id}";
+
 	db_query($query);
 	
 	global $config;
-	$data =array();
-	if($config['isProxy']) {
-		$account_id = post_input('account_id');
-		$server_id = post_input('server_id');
-		$data = c_disc_proxy($account_id, $server_id);
-		return $data;
-	}
+	$data = array();
 
 	return array("c_disc" => "OK");
 }
@@ -306,10 +206,6 @@ function handle_auth()
 	$a['map'] = post_input('map');
 	$a['account_ids'] = $_POST['account_id'];
 
-	global $config;
-	if($config['isProxy']) {
-		return startgame_proxy($a);
-	}
 
 	/* temporary default values for now */
 	$reserv = '0';
