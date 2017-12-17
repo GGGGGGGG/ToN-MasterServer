@@ -253,7 +253,7 @@ function handle_cr_vote()
 	global $dbcon;
 	$account_id = mysqli_real_escape_string($dbcon, intval(post_input("account_id")));
 	$comm_id = mysqli_real_escape_string($dbcon, intval(post_input("comm_id")));
-	$match_id = mysqli_real_escape_string($dbcon, intval(post_input("match_id"));
+	$match_id = mysqli_real_escape_string($dbcon, intval(post_input("match_id")));
 	$vote = mysqli_real_escape_string($dbcon, intval(post_input("vote")));
 	$reason = mysqli_real_escape_string($dbcon, post_input("reason"));
 	
