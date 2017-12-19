@@ -15,7 +15,9 @@ function handle_get_online()
 			id, port, ip, max_conn, num_conn, name, description, 
 			minlevel, maxlevel, official
 		FROM
-			servers");
+			servers
+			WHERE
+			online = 1");
 			
 	$data = array();
 	while($row = mysqli_fetch_assoc($result)) {
@@ -67,11 +69,11 @@ function handle_set_online()
 		INSERT INTO servers SET 
 			official = '$official', id = '$server_id', ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$desc', minlevel = $minlevel,
-			maxlevel = $maxlevel, updated = NOW()
+			maxlevel = $maxlevel, updated = NOW(), online = 1
 		ON DUPLICATE KEY UPDATE
 			official = '$official', id = $server_id, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$desc', minlevel = $minlevel, 
-			maxlevel = $maxlevel, updated = NOW()";
+			maxlevel = $maxlevel, updated = NOW(), online = 1";
 
 	global $dbcon;		
 	mysqli_query($dbcon, $query);
@@ -114,8 +116,7 @@ function handle_shutdown()
 	/* Remove server from list */
 	$id = intval(post_input("server_id"));
 	$query = "
-		DELETE FROM 
-			server 
+		UPDATE servers SET num_conn = 0, updated = NOW(), online = 0
 		WHERE
 			id = $id";
 	mysqli_query($dbcon, $query);
