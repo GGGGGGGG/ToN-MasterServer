@@ -15,9 +15,7 @@ function handle_get_online()
 			id, port, ip, max_conn, num_conn, name, description, 
 			minlevel, maxlevel, official
 		FROM
-			servers
-		WHERE
-			updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
+			servers");
 			
 	$data = array();
 	while($row = mysqli_fetch_assoc($result)) {
