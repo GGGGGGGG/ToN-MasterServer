@@ -8,7 +8,6 @@ dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "get
 /* Authentification */
 function handle_auth()
 {
-    global $config;
     global $dbcon;
 
     $nickname = mysqli_real_escape_string($dbcon, post_input("email"));
