@@ -188,8 +188,7 @@ function handle_c_disc()
 			user = {$account_id}";
 
 	db_query($query);
-	
-	global $config;
+
 	$data = array();
 
 	return array("c_disc" => "OK");
