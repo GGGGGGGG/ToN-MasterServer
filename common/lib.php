@@ -13,24 +13,28 @@ function get_input($key, $default = "")
 	global $dbcon;
 	if(!isset($_GET[$key]))
 		return mysqli_real_escape_string($dbcon, $default);
+
 	return mysqli_real_escape_string($dbcon, $_GET[$key]);
 }
 
 function post_input($key, $default = "")
 {
 	global $dbcon;
+
 	if(!isset($_POST[$key]))
 		return mysqli_real_escape_string($dbcon, $default);
+
 	return mysqli_real_escape_string($dbcon, $_POST[$key]);
 }
 
 function post_serialized($key, $default = array())
 {
+	global $dbcon;
 	if(!isset($_POST[$key]))
 		$result = $default;
 	else
 		$result = unserialize(preg_replace('/\s\s+/', '', $_POST[$key]));
-	return db_escape($result);
+	return mysqli_real_escape_string($dbcon, $result);
 }
 
 /* Open database connection */
@@ -98,6 +102,7 @@ function db_query_array($query) {
 
 /* Escape anything */
 function db_escape($values) {
+	global $dbcon;
 	if (is_array($values)) {
 		foreach ($values as $key => $value) {
 			$values[$key] = db_escape($value);
@@ -110,7 +115,7 @@ function db_escape($values) {
 		$values = $values ? 1 : 0;
 	}
 	else if (!is_numeric($values)) {
-		$values = mysqli_real_escape_string($values);
+		$values = mysqli_real_escape_string($dbcon, $values);
 	}
 	return $values;
 }

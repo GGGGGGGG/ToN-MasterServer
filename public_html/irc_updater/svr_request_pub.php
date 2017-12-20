@@ -33,22 +33,22 @@ function handle_set_online()
 	global $dbcon;
 
 	/* Sanitize input */
-	$ip = mysqli_real_escape_string($dbcon, $_SERVER["REMOTE_ADDR"]);
-	$port = mysqli_real_escape_string($dbcon,intval(post_input("port")));
-	$num_conn = mysqli_real_escape_string($dbcon, intval(post_input("num_conn")));
-	$max_conn = mysqli_real_escape_string($dbcon, intval(post_input("num_max")));
-	$name = mysqli_real_escape_string($dbcon, post_input("name"));
-	$desc = mysqli_real_escape_string($dbcon, post_input("desc"));
-	$status = mysqli_real_escape_string($dbcon, post_input("status"));
-	$minkarma = mysqli_real_escape_string($dbcon, post_input("minkarma"));
-	$location = mysqli_real_escape_string($dbcon, post_input("location"));
-	$cgt = mysqli_real_escape_string($dbcon, post_input("cgt"));
-	$next_map = mysqli_real_escape_string($dbcon, post_input("next_map"));
-	$map = mysqli_real_escape_string($dbcon, post_input("map"));
-	$login = mysqli_real_escape_string($dbcon, post_input("login"));
-	$pass = mysqli_real_escape_string($dbcon, post_input("pass"));
-	$minlevel = mysqli_real_escape_string($dbcon, intval(post_input("minlevel")));
-	$maxlevel = mysqli_real_escape_string($dbcon, intval(post_input("maxlevel")));
+	$ip = $_SERVER["REMOTE_ADDR"];
+	$port = intval(post_input("port"));
+	$num_conn = intval(post_input("num_conn"));
+	$max_conn = intval(post_input("num_max"));
+	$name = post_input("name");
+	$desc = post_input("desc");
+	$status = post_input("status");
+	$minkarma = post_input("minkarma");
+	$location = post_input("location");
+	$cgt = post_input("cgt");
+	$next_map = post_input("next_map");
+	$map = post_input("map");
+	$login = post_input("login");
+	$pass = post_input("pass");
+	$minlevel = intval(post_input("minlevel"));
+	$maxlevel = intval(post_input("maxlevel"));
 	/* authenticate server */
 	$data = array();
 	$isOfficial = False;
@@ -115,7 +115,7 @@ function handle_shutdown()
 	global $dbcon;
 
 	/* Remove server from list */
-	$id = mysqli_real_escape_string($dbcon, intval(post_input("server_id")));
+	$id = intval(post_input("server_id"));
 	$query = "
 		UPDATE servers SET num_conn = 0, updated = NOW(), online = 0
 		WHERE
@@ -131,13 +131,13 @@ function handle_c_conn()
 {
 	global $dbcon;
 
-	$account_id = mysqli_real_escape_string($dbcon, intval(post_input("account_id")));
-	$server_id = mysqli_real_escape_string($dbcon, intval(post_input("server_id")));
-	$c_conn['account_id'] = mysqli_real_escape_string($dbcon, post_input("account_id"));
-	$c_conn['server_id'] = mysqli_real_escape_string($dbcon, post_input("server_id"));
-	$c_conn['num_conn'] = mysqli_real_escape_string($dbcon, post_input("num_conn"));
-	$c_conn['cookie'] = mysqli_real_escape_string($dbcon, post_input("cookie"));
-	$c_conn['ip'] = mysqli_real_escape_string($dbcon, post_input("ip"));
+	$account_id = intval(post_input("account_id"));
+	$server_id = intval(post_input("server_id"));
+	$c_conn['account_id'] = post_input("account_id");
+	$c_conn['server_id'] = post_input("server_id");
+	$c_conn['num_conn'] = post_input("num_conn");
+	$c_conn['cookie'] = post_input("cookie");
+	$c_conn['ip'] = post_input("ip");
 
 	$cookie = $c_conn['cookie'];
 
@@ -176,10 +176,9 @@ function handle_c_conn()
 /* User disconnects a server */
 function handle_c_disc() 
 {
-	global $dbcon;
 
-	$account_id = mysqli_real_escape_string($dbcon, intval(post_input("account_id")));
-	$server_id = mysqli_real_escape_string($dbcon, intval(post_input("server_id")));
+	$account_id = intval(post_input("account_id"));
+	$server_id = intval(post_input("server_id"));
 	
 	$query = "
 		UPDATE
@@ -203,12 +202,12 @@ function handle_auth()
 {
 	global $dbcon;
 
-	$a['login'] = mysqli_real_escape_string($dbcon, post_input('login'));
-	$a['pass'] = mysqli_real_escape_string($dbcon, post_input('pass'));
-	$a['type'] = mysqli_real_escape_string($dbcon, post_input('type')); // = "reg"
-	$a['port'] = mysqli_real_escape_string($dbcon,post_input('port'));
-	$a['map'] = mysqli_real_escape_string($dbcon, post_input('map'));
-	$a['account_ids'] = mysqli_real_escape_string($dbcon, $_POST['account_id']);
+	$a['login'] = post_input('login');
+	$a['pass'] = post_input('pass');
+	$a['type'] = post_input('type'); // = "reg"
+	$a['port'] = post_input('port');
+	$a['map'] = post_input('map');
+	$a['account_ids'] = post_input('account_id');
 
 
 	/* temporary default values for now */
