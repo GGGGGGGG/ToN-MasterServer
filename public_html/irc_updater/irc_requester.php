@@ -110,7 +110,8 @@ function handle_item_list()
 
     /* fetch from unofficial MS if user entry exists */
     $id = intval($account_id);
-    $result = db_query("SELECT item_id,type,exp_date FROM items WHERE account_id = $id");
+    $query = "SELECT item_id,type,exp_date FROM items WHERE account_id = $id";
+    $result = mysqli_query($dbcon, $query);
     if (mysqli_num_rows($result) > 0) {
         $data = array();
         while ($row = mysqli_fetch_assoc($result)) {
@@ -158,28 +159,31 @@ function handle_nick2id()
 {
     global $dbcon;
 
-    $nick = post_input("nickname");
+    $nicks = post_input("nickname");
 
-    if (!isset($nick) or !is_array($nick))
+    if (!isset($nicks) or !is_array($nicks))
         return array();
 
 
     $data = array();
 
-    /* Search nickname in database */
-    $query = "
+    foreach ($nicks as $nick) {
+
+        /* Search nickname in database */
+        $query = "
 			SELECT 
 				id 
 			FROM 
 				users
 			WHERE
 				username = '{$nick}'";
-    $result = mysqli_query($dbcon, $query);
+        $result = mysqli_query($dbcon, $query);
 
-    /* Save in output (nickname -> id) */
-    if (mysqli_num_rows($result) == 1) {
-        $row = mysqli_fetch_assoc($result);
-        $data[$nick] = "{$row["id"]}";
+        /* Save in output (nickname -> id) */
+        if (mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_assoc($result);
+            $data[$nick] = "{$row["id"]}";
+        }
     }
 
     return $data;
