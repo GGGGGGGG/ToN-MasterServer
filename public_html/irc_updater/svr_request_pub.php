@@ -60,7 +60,7 @@ function handle_set_online()
 			name = '$name', description = '$desc', minlevel = $minlevel,
 			maxlevel = $maxlevel, updated = NOW(), online = 1
 		ON DUPLICATE KEY UPDATE
-			official = '$official', id = DEFAULT, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
+			official = '$official', ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW(), online = 1";
 
