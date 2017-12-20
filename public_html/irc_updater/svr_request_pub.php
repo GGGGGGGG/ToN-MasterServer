@@ -51,28 +51,16 @@ function handle_set_online()
 	$maxlevel = intval(post_input("maxlevel"));
 	/* authenticate server */
 	$data = array();
-	$isOfficial = False;
-
-	if($isOfficial) {
-		// this shouldn't happen! generate server id if not returned by official masterserver
-		//$res = mysqli_query($dbcon, "SELECT id from server ORDER BY id DESC LIMIT 1");
-		//$row = mysqli_fetch_assoc($res);
-		//$data['svr_id'] = str(intval($row['id']) + 1);
-		$server_id = $data['svr_id'];
-		$official = '1';
-	} else {
-		$server_id = intval($data['account_id']);
-		$official = '0';
-	}
+	$official = 0;
 
 	/* Create in database */
 	$query = "
 		INSERT INTO servers SET 
-			official = '$official', id = '$server_id', ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
+			official = '$official', id = DEFAULT, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$desc', minlevel = $minlevel,
 			maxlevel = $maxlevel, updated = NOW(), online = 1
 		ON DUPLICATE KEY UPDATE
-			official = '$official', id = $server_id, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
+			official = '$official', id = DEFAULT, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW(), online = 1";
 
