@@ -11,10 +11,24 @@ include("config.php");
 function get_input($key, $default = "")
 {
 	global $dbcon;
-	if(!isset($_GET[$key]))
-		return mysqli_real_escape_string($dbcon, $default);
+	$returnValue = null;
+	$getValue = $_GET[$key];
 
-	return mysqli_real_escape_string($dbcon, $_GET[$key]);
+    if(!isset($getValue)) {
+        $returnValue = mysqli_real_escape_string($dbcon, $default);
+    } else {
+        if(is_array($getValue)){
+            foreach ($getValue as $value)
+            {
+                $getValue[$value] = mysqli_real_escape_string($dbcon, $value);
+            }
+            $returnValue = $getValue;
+        } else {
+            $returnValue = mysqli_real_escape_string($dbcon, $getValue);
+        }
+    }
+
+    return $returnValue;
 }
 
 function post_input($key, $default = "")
