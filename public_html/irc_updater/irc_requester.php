@@ -106,6 +106,7 @@ function handle_item_list()
 {
     global $dbcon;
     $account_id = post_input("account_id");
+    var_dump(mysqli_real_escape_string($dbcon, Array(0 => "Allo")));
     $data = array();
 
     /* fetch from unofficial MS if user entry exists */
@@ -127,13 +128,15 @@ function handle_item_list()
 function handle_get_all_stats()
 {
     global $dbcon;
-    $account_id = post_input("account_id");
-    $query = "SELECT overall_r, sf, lf, LEVEL, clans.*, karma, playerstats.* FROM playerinfos JOIN playerstats JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id AND playerstats.account_id = {$account_id}";
+    $account_ids = post_input("account_id");
     $data = array();
-    $result = mysqli_query($dbcon, $query);
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $data['all_stats'][$row['account_id']] = $row;
+    foreach ($account_ids as $account_id) {
+        $query = "SELECT overall_r, sf, lf, LEVEL, clans.*, karma, playerstats.* FROM playerinfos JOIN playerstats JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id AND playerstats.account_id = {$account_id}";
+        $result = mysqli_query($dbcon, $query);
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $data['all_stats'][$row['account_id']] = $row;
+            }
         }
     }
     return $data;

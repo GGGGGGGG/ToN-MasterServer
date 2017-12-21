@@ -20,11 +20,24 @@ function get_input($key, $default = "")
 function post_input($key, $default = "")
 {
 	global $dbcon;
+	$returnValue = null;
+	$postValue = $_POST[$key];
 
-	if(!isset($_POST[$key]))
-		return mysqli_real_escape_string($dbcon, $default);
+	if(!isset($postValue)) {
+        $returnValue = mysqli_real_escape_string($dbcon, $default);
+    } else {
+		if(is_array($postValue)){
+			foreach ($postValue as $value)
+			{
+				$postValue[$value] = mysqli_real_escape_string($dbcon, $value);
+			}
+			$returnValue = $postValue;
+		} else {
+            $returnValue = mysqli_real_escape_string($dbcon, $postValue);
+        }
+	}
 
-	return mysqli_real_escape_string($dbcon, $_POST[$key]);
+	return $returnValue;
 }
 
 function post_serialized($key, $default = array())

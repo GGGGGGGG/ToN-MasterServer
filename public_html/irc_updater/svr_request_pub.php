@@ -180,9 +180,9 @@ function handle_c_disc()
 
 	db_query($query);
 
-	$data = array();
+	$data = array("c_disc" => "OK");
 
-	return array("c_disc" => "OK");
+	return $data;
 }
 
 /* Server start game */
