@@ -86,16 +86,17 @@ function handle_set_online()
 function handle_set_online_ids()
 {
 	global $dbcon;
-	/* Update number of connections */
-	$num_conn = mysqli_real_escape_string($dbcon, intval(post_input("num_conn")));
-	$login = mysqli_real_escape_string($dbcon, post_input("login"));
-	$query = "
+	if (handle_auth()) {
+        /* Update number of connections */
+        $num_conn = mysqli_real_escape_string($dbcon, intval(post_input("num_conn")));
+        $login = mysqli_real_escape_string($dbcon, post_input("login"));
+        $query = "
 		UPDATE servers SET
 			num_conn = $num_conn,
 			updated = NOW()
 		WHERE
 			login = '$login'";
-
+    }
 	/* Return empty */
 	return array();
 }
@@ -105,14 +106,15 @@ function handle_shutdown()
 {
 	global $dbcon;
 
-	/* Remove server from list */
-	$id = intval(post_input("server_id"));
-	$query = "
+	if (handle_auth()) {
+        /* Remove server from list */
+        $id = intval(post_input("server_id"));
+        $query = "
 		UPDATE servers SET num_conn = 0, updated = NOW(), online = 0
 		WHERE
 			id = $id";
-	mysqli_query($dbcon, $query);
-	
+        mysqli_query($dbcon, $query);
+    }
 	/* Return empty */
 	return array();
 }
