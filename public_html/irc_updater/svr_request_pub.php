@@ -192,12 +192,31 @@ function handle_c_disc()
 /* Server start game */
 function handle_auth()
 {
+	$data = array();
+	global $dbcon;
+
 	if(server_auth())
 	{
-		return;
+		$svr_ids = post_input('account_id');
+		foreach($svr_ids as $svr_id)
+		{
+            $query = "SELECT official from servers where id = {$svr_id}";
+            $result = mysqli_query($dbcon, $query);
+            $check = mysqli_fetch_assoc($result);
+            if($check['official'])
+			{
+                $port = post_input('port');
+                $map = post_input('map');
+
+                $query = "INSERT INTO match_summs (port, created_at, map, server_id) VALUES ('{$port}', now(), '{$map}', '{$svr_id}' )";
+                $data['salt'] = 't3x'; //unused by us. just there since the game server uses it
+				$data['match_id'] = mysqli_insert_id($dbcon);
+			}
+		}
+
 	}
 
-	return;
+	return $data;
 
 }
 
