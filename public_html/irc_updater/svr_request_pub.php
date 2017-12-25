@@ -219,6 +219,13 @@ function handle_auth()
     if (!$authSuccess) {
         return 0;
     } else {
+        $query = "SELECT banneduntil from bans WHERE account_id = {$data[account_id]} AND banneduntil > NOW()";
+        $result = mysqli_query($dbcon, $query);
+
+        if(mysqli_num_rows($result) > 0)
+        {
+        	return 0;
+        }
     	return 1;
 	}
 
