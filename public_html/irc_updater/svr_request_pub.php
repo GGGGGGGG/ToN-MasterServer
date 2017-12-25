@@ -209,6 +209,7 @@ function handle_auth()
                 $map = post_input('map');
 
                 $query = "INSERT INTO match_summs (port, created_at, map, server_id) VALUES ('{$port}', now(), '{$map}', '{$svr_id}' )";
+                mysqli_query($dbcon, $query);
                 $data['salt'] = 't3x'; //unused by us. just there since the game server uses it
 				$data['match_id'] = mysqli_insert_id($dbcon);
 			}
