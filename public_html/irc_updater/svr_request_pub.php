@@ -33,7 +33,7 @@ function handle_set_online()
     global $dbcon;
     $data = array();
 
-	if(handle_auth()) {
+	if(server_auth()) {
         /* Sanitize input */
         $ip = $_SERVER["REMOTE_ADDR"];
         $port = intval(post_input("port"));
@@ -86,7 +86,7 @@ function handle_set_online()
 function handle_set_online_ids()
 {
 	global $dbcon;
-	if (handle_auth()) {
+	if (server_auth()) {
         /* Update number of connections */
         $num_conn = mysqli_real_escape_string($dbcon, intval(post_input("num_conn")));
         $login = mysqli_real_escape_string($dbcon, post_input("login"));
@@ -106,7 +106,7 @@ function handle_shutdown()
 {
 	global $dbcon;
 
-	if (handle_auth()) {
+	if (server_auth()) {
         /* Remove server from list */
         $id = intval(post_input("server_id"));
         $query = "
@@ -192,10 +192,21 @@ function handle_c_disc()
 /* Server start game */
 function handle_auth()
 {
-	global $dbcon;
+	if(server_auth())
+	{
+		return;
+	}
 
-	$login = post_input('login');
-	$pass = post_input('pass');
+	return;
+
+}
+
+function server_auth()
+{
+    global $dbcon;
+
+    $login = post_input('login');
+    $pass = post_input('pass');
 
     $query = "
 		SELECT 
@@ -219,16 +230,15 @@ function handle_auth()
     if (!$authSuccess) {
         return 0;
     } else {
-        $query = "SELECT banneduntil from bans WHERE account_id = {$data[account_id]} AND banneduntil > NOW()";
+        $query = "SELECT banneduntil from bans WHERE account_id = {$data['account_id']} AND banneduntil > NOW()";
         $result = mysqli_query($dbcon, $query);
 
         if(mysqli_num_rows($result) > 0)
         {
-        	return 0;
+            return 0;
         }
-    	return 1;
-	}
-
+        return 1;
+    }
 }
 
 ?>
