@@ -31,11 +31,27 @@ function handle_auth()
     $result = mysqli_query($dbcon, $query);
     $data = mysqli_fetch_assoc($result);
 
+
     /* verify password */
     $passwordhash = $data['passwordhash'];
     $authSuccess = password_verify($password, $passwordhash);
-    if (!$authSuccess)
+    if (!$authSuccess) {
         return array("error" => "Invalid login. :/");
+    }
+
+    $data['passwordhash'] = "secret"; //don't need to send back the passwordhash
+
+
+    // okay so we checked the user and passwords were right, let's check if the user is banned or not.
+    $query = "SELECT banneduntil from bans WHERE account_id = {$data[account_id]} AND banneduntil > NOW()";
+    $result = mysqli_query($dbcon, $query);
+
+    if(mysqli_num_rows($result) > 0)
+    {
+        $data = mysqli_fetch_assoc($result);
+        return array("error" => "You're banned until ". $data['banneduntil']);
+    }
+
 
     /* generate cookie for user and add to DB */
     $cookie = md5(uniqid(rand(), true));
@@ -175,7 +191,7 @@ function handle_nick2id()
 
     $nicks = post_input("nickname");
 
-    if (!isset($nicks) or !is_array($nicks))
+    if (!is_array($nicks))
         return array();
 
 
