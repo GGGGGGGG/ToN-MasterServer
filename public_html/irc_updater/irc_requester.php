@@ -24,9 +24,7 @@ function handle_auth()
 		FROM 
 			users
 		WHERE 
-			username = '{$nickname}' 
-		AND 
-			CHAR_LENGTH(password) > 1";
+			username = '{$nickname}' ";
 
     $result = mysqli_query($dbcon, $query);
     $data = mysqli_fetch_assoc($result);
