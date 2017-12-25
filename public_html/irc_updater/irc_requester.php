@@ -58,7 +58,7 @@ function handle_auth()
     $pquery = "UPDATE users SET cookie='{$cookie}' WHERE username='{$nickname}'";
     db_query($pquery);
 
-    /* Return user data */
+    //everyone is prime
     $data["account_type"] = 1;
 
     /* Buddy list */

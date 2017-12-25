@@ -30,31 +30,33 @@ function handle_get_online()
 /* Add a server */
 function handle_set_online()
 {
-	global $dbcon;
+    global $dbcon;
+    $data = array();
 
-	/* Sanitize input */
-	$ip = $_SERVER["REMOTE_ADDR"];
-	$port = intval(post_input("port"));
-	$num_conn = intval(post_input("num_conn"));
-	$max_conn = intval(post_input("num_max"));
-	$name = post_input("name");
-	$desc = post_input("desc");
-	$status = post_input("status");
-	$minkarma = post_input("minkarma");
-	$location = post_input("location");
-	$cgt = post_input("cgt");
-	$next_map = post_input("next_map");
-	$map = post_input("map");
-	$login = post_input("login");
-	$pass = post_input("pass");
-	$minlevel = intval(post_input("minlevel"));
-	$maxlevel = intval(post_input("maxlevel"));
-	/* authenticate server */
-	$data = array();
-	$official = 0;
+	if(handle_auth()) {
+        /* Sanitize input */
+        $ip = $_SERVER["REMOTE_ADDR"];
+        $port = intval(post_input("port"));
+        $num_conn = intval(post_input("num_conn"));
+        $max_conn = intval(post_input("num_max"));
+        $name = post_input("name");
+        $desc = post_input("desc");
+        $status = post_input("status");
+        $minkarma = post_input("minkarma");
+        $location = post_input("location");
+        $cgt = post_input("cgt");
+        $next_map = post_input("next_map");
+        $map = post_input("map");
+        $login = post_input("login");
+        $pass = post_input("pass");
+        $minlevel = intval(post_input("minlevel"));
+        $maxlevel = intval(post_input("maxlevel"));
+        /* authenticate server */
 
-	/* Create in database */
-	$query = "
+        $official = 0;
+
+        /* Create in database */
+        $query = "
 		INSERT INTO servers SET 
 			official = '$official', id = DEFAULT, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$desc', minlevel = $minlevel,
@@ -64,17 +66,18 @@ function handle_set_online()
 			description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW(), online = 1";
 
-	mysqli_query($dbcon, $query);
+        mysqli_query($dbcon, $query);
 
 
-	/* Send id in answer */
-	$id = mysqli_insert_id($dbcon);
-	$data = array(
-		"acct_id" => $id,
-		"svr_id" => $id,
-		"set_online" => 3,
-		"UPD" => 11,
-		"reservation" => -1);
+        /* Send id in answer */
+        $id = mysqli_insert_id($dbcon);
+        $data = array(
+            "acct_id" => $id,
+            "svr_id" => $id,
+            "set_online" => 3,
+            "UPD" => 11,
+            "reservation" => -1);
+    }
 
 	return $data;
 }
@@ -164,7 +167,6 @@ function handle_c_conn()
 /* User disconnects a server */
 function handle_c_disc() 
 {
-
 	$account_id = intval(post_input("account_id"));
 	$server_id = intval(post_input("server_id"));
 	
@@ -190,19 +192,34 @@ function handle_auth()
 {
 	global $dbcon;
 
-	$a['login'] = post_input('login');
-	$a['pass'] = post_input('pass');
-	$a['type'] = post_input('type'); // = "reg"
-	$a['port'] = post_input('port');
-	$a['map'] = post_input('map');
-	$a['account_ids'] = post_input('account_id');
+	$login = post_input('login');
+	$pass = post_input('pass');
 
+    $query = "
+		SELECT 
+			username AS nickname,
+			id AS account_id,
+			permissions,
+			password AS passwordhash
+		FROM 
+			users
+		WHERE 
+			username = '{$login}'
+		AND 
+			permissions = 1";
 
-	/* temporary default values for now */
-	$reserv = '0';
-	$salt = '2mP';
+    $result = mysqli_query($dbcon, $query);
+    $data = mysqli_fetch_assoc($result);
 
-	return array('svr_id' => $svr_id, 'reserv' => $reserv, 'salt' => $salt, 'match_id' => $match_id);
+    /* verify password */
+    $passwordhash = $data['passwordhash'];
+    $authSuccess = password_verify($pass, $passwordhash);
+    if (!$authSuccess) {
+        return 0;
+    } else {
+    	return 1;
+	}
+
 }
 
 ?>
