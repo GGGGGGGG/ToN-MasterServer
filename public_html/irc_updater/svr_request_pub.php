@@ -204,9 +204,9 @@ function handle_auth()
 		$query = "SELECT id from servers WHERE login = '{$login}'";
 		$result = mysqli_query($dbcon, $query);
 		$row = mysqli_fetch_assoc($result);
-		$svr_id = $row['id'];
+		$data['svr_id'] = $row['id'];
 
-		$query = "SELECT official from servers where id = {$svr_id}";
+		$query = "SELECT official from servers where id = {$data['svr_id']}";
 		$result = mysqli_query($dbcon, $query);
 		$check = mysqli_fetch_assoc($result);
 		if($check['official'])
@@ -214,7 +214,7 @@ function handle_auth()
 			$port = post_input('port');
 			$map = post_input('map');
 
-			$query = "INSERT INTO match_summs (port, created_at, map, server_id) VALUES ('{$port}', now(), '{$map}', '{$svr_id}' )";
+			$query = "INSERT INTO match_summs (port, created_at, map, server_id) VALUES ('{$port}', now(), '{$map}', '{$data['svr_id']}' )";
 			mysqli_query($dbcon, $query);
 			$data['salt'] = 't3x'; //unused by us. just there since the game server uses it
 			$data['match_id'] = mysqli_insert_id($dbcon);
