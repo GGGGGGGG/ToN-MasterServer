@@ -203,12 +203,12 @@ function handle_auth()
 		$login = post_input('login');
 		$query = "SELECT id from servers WHERE login = '{$login}'";
 		$result = mysqli_query($dbcon, $query);
-		$row = mysqli_fetch_row($result);
+		$row = mysqli_fetch_assoc($result);
 		$svr_id = $row['id'];
 
 		$query = "SELECT official from servers where id = {$svr_id}";
 		$result = mysqli_query($dbcon, $query);
-		$check = mysqli_fetch_row($result);
+		$check = mysqli_fetch_assoc($result);
 		if($check['official'])
 		{
 			$port = post_input('port');
