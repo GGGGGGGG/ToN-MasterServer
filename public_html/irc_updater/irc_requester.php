@@ -41,7 +41,7 @@ function handle_auth()
 
 
     // okay so we checked the user and passwords were right, let's check if the user is banned or not.
-    $query = "SELECT banneduntil from bans WHERE account_id = {$data[account_id]} AND banneduntil > NOW()";
+    $query = "SELECT banneduntil from bans WHERE account_id = {$data['account_id']} AND banneduntil > NOW()";
     $result = mysqli_query($dbcon, $query);
 
     if(mysqli_num_rows($result) > 0)
