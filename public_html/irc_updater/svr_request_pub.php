@@ -201,12 +201,14 @@ function handle_auth()
 		*  it's only sending login, pass, type, port, map and the account ids of the clients on the server.
 		*/
 		$login = post_input('login');
-		$query = "SELECT id from servers WHERE login = {$login}";
-		$svr_id = mysqli_query($dbcon, $query);
+		$query = "SELECT id from servers WHERE login = '{$login}'";
+		$result = mysqli_query($dbcon, $query);
+		$row = mysqli_fetch_row($result);
+		$svr_id = $row['id'];
 
 		$query = "SELECT official from servers where id = {$svr_id}";
 		$result = mysqli_query($dbcon, $query);
-		$check = mysqli_fetch_assoc($result);
+		$check = mysqli_fetch_row($result);
 		if($check['official'])
 		{
 			$port = post_input('port');
