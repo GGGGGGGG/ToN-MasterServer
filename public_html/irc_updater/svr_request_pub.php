@@ -59,11 +59,11 @@ function handle_set_online()
         $query = "
 		INSERT INTO servers SET 
 			official = '$official', id = DEFAULT, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
-			name = '$name', description = '$desc', minlevel = $minlevel,
+			name = '$name', login = '{$login}', description = '$desc', minlevel = $minlevel,
 			maxlevel = $maxlevel, updated = NOW(), online = 1
 		ON DUPLICATE KEY UPDATE
 			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
-			description = '$desc', minlevel = $minlevel, 
+			login = '{$login}', description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW(), online = 1";
 
         mysqli_query($dbcon, $query);
@@ -197,24 +197,26 @@ function handle_auth()
 
 	if(server_auth())
 	{
-		$svr_ids = post_input('account_id');
-		foreach($svr_ids as $svr_id)
+		/* temp measure to get server id, it's currently not sent by the game server on post.
+		*  it's only sending login, pass, type, port, map and the account ids of the clients on the server.
+		*/
+		$login = post_input('login');
+		$query = "SELECT id from servers WHERE login = {$login}";
+		$svr_id = mysqli_query($dbcon, $query);
+
+		$query = "SELECT official from servers where id = {$svr_id}";
+		$result = mysqli_query($dbcon, $query);
+		$check = mysqli_fetch_assoc($result);
+		if($check['official'])
 		{
-            $query = "SELECT official from servers where id = {$svr_id}";
-            $result = mysqli_query($dbcon, $query);
-            $check = mysqli_fetch_assoc($result);
-            if($check['official'])
-			{
-                $port = post_input('port');
-                $map = post_input('map');
+			$port = post_input('port');
+			$map = post_input('map');
 
-                $query = "INSERT INTO match_summs (port, created_at, map, server_id) VALUES ('{$port}', now(), '{$map}', '{$svr_id}' )";
-                mysqli_query($dbcon, $query);
-                $data['salt'] = 't3x'; //unused by us. just there since the game server uses it
-				$data['match_id'] = mysqli_insert_id($dbcon);
-			}
+			$query = "INSERT INTO match_summs (port, created_at, map, server_id) VALUES ('{$port}', now(), '{$map}', '{$svr_id}' )";
+			mysqli_query($dbcon, $query);
+			$data['salt'] = 't3x'; //unused by us. just there since the game server uses it
+			$data['match_id'] = mysqli_insert_id($dbcon);
 		}
-
 	}
 
 	return $data;
