@@ -57,11 +57,22 @@ function post_input($key, $default = "")
 function post_serialized($key, $default = array())
 {
 	global $dbcon;
-	if(!isset($_POST[$key]))
-		$result = $default;
-	else
-		$result = unserialize(preg_replace('/\s\s+/', '', $_POST[$key]));
-	return mysqli_real_escape_string($dbcon, $result);
+	$postValue = $_POST[$key];
+
+	if(!isset($postValue)) {
+        $result = $default;
+    }
+	else {
+		if (is_array($postValue)){
+			foreach ($postValue as $value)
+			{
+                $postValue[$value] = mysqli_real_escape_string($dbcon, $value);
+			}
+		}
+        $result = unserialize(preg_replace('/\s\s+/', '', $postValue));
+	}
+
+	return $result;
 }
 
 /* Open database connection */

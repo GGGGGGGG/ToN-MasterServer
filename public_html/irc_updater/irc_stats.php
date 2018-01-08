@@ -48,6 +48,7 @@ dispatch_request(array("end_game"));
 function handle_end_game()
 {
 	global $fields;
+	global $dbcon;
 	
 	$match_id = intval(post_input("match_id"));
 	$map = post_input("map");
@@ -80,22 +81,22 @@ function handle_end_game()
 				`avg_sf` = {$team['avg_sf']},
 				`commander` = {$team['commander']}";
 		db_query($query);
-		$team_ids[$index] = mysqli_insert_id();
+		$team_ids[$index] = mysqli_insert_id($dbcon);
 	}
 
 	/* Insert player stats */
 	$player_stats = post_serialized("player_stats");
 	foreach ($player_stats as $player) {
-		$user_id = $player['account_id'];
 		$team_id = $team_ids[$player['team']];
 		
 		$query = "
 			INSERT INTO
 				actionplayers
 			SET
-				`user` = {$user_id},
+				`user` = {$player['account_id']},
 				`match` = {$match_id},
 				`team` = {$team_id}";
+
 		
 		// stats fields
 		foreach ($fields['action'] as $field) {
@@ -108,14 +109,13 @@ function handle_end_game()
 	/* Insert commander stats */
 	$commander_stats = post_serialized("commander_stats");
 	foreach ($commander_stats as $commander) {
-		$user_id = $commander['account_id'];
 		$team_id = $team_ids[$commander['c_team']];
 		
 		$query = "
 			INSERT INTO
 				commanders
 			SET
-				`user` = {$user_id},
+				`user` = {$commander['account_id']},
 				`match` = {$match_id},
 				`team` = {$team_id}";
 		
