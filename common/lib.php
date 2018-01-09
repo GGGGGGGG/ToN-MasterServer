@@ -1,7 +1,7 @@
 <?php
 
 /* Show all errors */
-ini_set('display_errors', 'Off');
+ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 /* Load config */
@@ -138,33 +138,15 @@ function db_query_array($query) {
     return $array;
 }
 
-/* Escape anything */
-function db_escape($values) {
-	global $dbcon;
-	if (is_array($values)) {
-		foreach ($values as $key => $value) {
-			$values[$key] = db_escape($value);
-		}
-	}
-	else if ($values === null) {
-		$values = 'NULL';
-	}
-	else if (is_bool($values)) {
-		$values = $values ? 1 : 0;
-	}
-	else if (!is_numeric($values)) {
-		$values = mysqli_real_escape_string($dbcon, $values);
-	}
-	return $values;
-}
-
 /* Dispatch request into a handle function */
 function dispatch_request($valid_actions)
 {
 	/* Parse request */
 	$action = post_input("f");	
-	if(!in_array($action, $valid_actions))
-		die("Wrong action");
+	if(!in_array($action, $valid_actions)) {
+		error_log($action, 1, '/var/log/ToN/error.log');
+        die("Wrong action");
+    }
 	
 	/* Dispatch request */
 	$func = "handle_".$action;
