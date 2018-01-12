@@ -145,7 +145,7 @@ function handle_c_conn()
 
 	$query = "
 		INSERT INTO
-			player
+			players
 		SET
 			user = {$account_id},
 			server = {$server_id},
@@ -174,7 +174,7 @@ function handle_c_disc()
 	
 	$query = "
 		UPDATE
-			player
+			players
 		SET
 			server = {$server_id},
 			online = 0,
