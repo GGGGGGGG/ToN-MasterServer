@@ -1,6 +1,6 @@
 <?php
 
-include("../common/lib.php");
+include("../../common/lib.php");
 
 /* Valid stats fields */
 $fields = array(
@@ -54,7 +54,11 @@ function handle_end_game()
 	$map = post_input("map");
 	$winner = intval(post_input("winner"));
 	$duration = post_input("time");
-	$raw = serialize($_POST);
+    $player_stats = post_serialized("player_stats");
+    $commander_stats = post_serialized("commander_stats");
+    error_log("playerinfo". $player_stats, 3, '/var/tmp/ton.log');
+    error_log("commanderinfo". $commander_stats, 3, '/var/tmp/ton.log');
+
 	
 	/* Insert match */
 	$query = "
@@ -64,8 +68,7 @@ function handle_end_game()
 			`id` = {$match_id},
 			`map` = '{$map}',
 			`duration` = '{$duration}',
-			`winner` = {$winner},
-			`raw` = '{$raw}'";
+			`winner` = {$winner},";
 	db_query($query);
 	
 	/* Insert teams */
@@ -85,7 +88,6 @@ function handle_end_game()
 	}
 
 	/* Insert player stats */
-	$player_stats = post_serialized("player_stats");
 	foreach ($player_stats as $player) {
 		$team_id = $team_ids[$player['team']];
 		
@@ -107,7 +109,6 @@ function handle_end_game()
 	}
 	
 	/* Insert commander stats */
-	$commander_stats = post_serialized("commander_stats");
 	foreach ($commander_stats as $commander) {
 		$team_id = $team_ids[$commander['c_team']];
 		
@@ -126,6 +127,7 @@ function handle_end_game()
 		
 		db_query($query);
 	}
+
 		
 	return array();
 }

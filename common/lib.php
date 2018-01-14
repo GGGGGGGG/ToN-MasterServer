@@ -144,7 +144,7 @@ function dispatch_request($valid_actions)
 	/* Parse request */
 	$action = post_input("f");	
 	if(!in_array($action, $valid_actions)) {
-		error_log($action, 1, '/var/log/ToN/error.log');
+		error_log($action, 3, '/var/tmp/ton.log');
         die("Wrong action");
     }
 	
