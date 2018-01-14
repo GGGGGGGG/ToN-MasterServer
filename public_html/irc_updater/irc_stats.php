@@ -56,8 +56,8 @@ function handle_end_game()
 	$duration = post_input("time");
     $player_stats = post_serialized("player_stats");
     $commander_stats = post_serialized("commander_stats");
-    error_log("playerinfo". $player_stats, 3, '/var/tmp/ton.log');
-    error_log("commanderinfo". $commander_stats, 3, '/var/tmp/ton.log');
+    error_log($player_stats, 3, '/var/tmp/ton.log');
+    error_log($commander_stats, 3, '/var/tmp/ton.log');
 
 	
 	/* Insert match */
@@ -68,8 +68,15 @@ function handle_end_game()
 			`id` = {$match_id},
 			`map` = '{$map}',
 			`duration` = '{$duration}',
-			`winner` = {$winner},";
-	db_query($query);
+			`winner` = {$winner}";
+	try
+    {
+        db_query($query);
+    } catch (Exception $e)
+    {
+        error_log($e, 3, '/var/tmp/ton.log');
+    }
+
 	
 	/* Insert teams */
 	$teams = post_serialized("team");
@@ -83,8 +90,15 @@ function handle_end_game()
 				`race` = '{$team['race']}',
 				`avg_sf` = {$team['avg_sf']},
 				`commander` = {$team['commander']}";
-		db_query($query);
-		$team_ids[$index] = mysqli_insert_id($dbcon);
+		try
+        {
+            db_query($query);
+            $team_ids[$index] = mysqli_insert_id($dbcon);
+        } catch (Exception $e)
+        {
+            error_log($e, 3, '/var/tmp/ton.log');
+        }
+
 	}
 
 	/* Insert player stats */
@@ -104,8 +118,15 @@ function handle_end_game()
 		foreach ($fields['action'] as $field) {
 			$query .= ", `{$field}` = '{$player[$field]}'";
 		}
+		try
+        {
+            db_query($query);
+        } catch (Exception $e)
+        {
+            error_log($e, 3, '/var/tmp/ton.log');
+        }
 		
-		db_query($query);
+
 	}
 	
 	/* Insert commander stats */
@@ -124,8 +145,13 @@ function handle_end_game()
 		foreach ($fields['commander'] as $name => $target) {
 			$query .= ", `{$target}` = '{$commander[$name]}'";
 		}
-		
-		db_query($query);
+		try {
+            db_query($query);
+        }
+        catch (Exception $e)
+        {
+            error_log($e, 3, '/var/tmp/ton.log');
+        }
 	}
 
 		
