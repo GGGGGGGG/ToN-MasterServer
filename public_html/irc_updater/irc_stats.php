@@ -56,9 +56,6 @@ function handle_end_game()
 	$duration = post_input("time");
     $player_stats = post_serialized("player_stats");
     $commander_stats = post_serialized("commander_stats");
-    error_log($player_stats, 3, '/var/tmp/ton.log');
-    error_log($commander_stats, 3, '/var/tmp/ton.log');
-
 	
 	/* Insert match */
 	$query = "
@@ -112,6 +109,9 @@ function handle_end_game()
 				`user` = {$player['account_id']},
 				`match` = {$match_id},
 				`team` = {$team_id}";
+
+		//we have to calculate sf ourselves, client sends back the sf account instead
+		$player['sf'] = $player['exp']/($player['secs']/60);
 
 		
 		// stats fields
