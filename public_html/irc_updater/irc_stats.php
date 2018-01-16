@@ -162,7 +162,7 @@ function handle_end_game()
             npc = {$playerArray['npc']},
             hp_healed = {$playerArray['hp_healed']},
             secs = {$playerArray['secs']},
-            WHERE = {$playerArray['id']};
+            WHERE = {$player['account_id']};
 		";
 
 		try
