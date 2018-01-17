@@ -100,7 +100,7 @@ function handle_end_game()
             error_log($e, 3, '/var/tmp/ton.log');
         }
 
-        if ($team['race'] == 'H' && $winner == '1' || $team['race'] == 'B' && $winner == '2')
+        if ($team['race'] == 'H' && $winner == 1 || $team['race'] == 'B' && $winner == 2) //try this lead
         {
             $winner_id = $team_ids[$index];
         }
@@ -180,6 +180,12 @@ function handle_end_game()
 	/* Insert commander stats */
 	foreach ($commander_stats as $commander) {
 		$team_id = $team_ids[$commander['c_team']];
+
+        $queryCommander = "SELECT * FROM
+		commanderstats
+		WHERE account_id = {$commander['account_id']}";
+        $result = mysqli_query($dbcon, $queryCommander);
+        $commanderArray = mysqli_fetch_assoc($result);
 		
 		$query = "
 			INSERT INTO
@@ -192,9 +198,41 @@ function handle_end_game()
 		// stats fields
 		foreach ($fields['commander'] as $name => $target) {
 			$query .= ", `{$target}` = '{$commander[$name]}'";
+            if($target != 'ip' || $target != 'sf' || $target != 'end_status') {
+                $commanderArray[$target] = $commanderArray[$target] + $commander[$name];
+            }
 		}
+
+        if($commander['c_team'] == $winner_id)
+        {
+            $commanderArray['wins'] = $commanderArray['wins'] + 1;
+        } else {
+            $commanderArray['losses'] = $commanderArray['losses'] + 1;
+        }
+        $queryCommander = "UPDATE
+            commanderstats
+            SET 
+            wins = {$commanderArray['wins']},
+            losses = {$commanderArray['losses']},
+            exp = {$commanderArray['exp']},
+            builds = {$commanderArray['builds']},
+            gold = {$commanderArray['gold']},
+            razed = {$commanderArray['razed']},
+            hp_healed = {$commanderArray['hp_healed']},
+            pdmg = {$commanderArray['pdmg']},
+            kills = {$commanderArray['kills']},
+            assists = {$commanderArray['assists']},
+            debuffs = {$commanderArray['debuffs']},
+            buffs = {$commanderArray['buffs']},
+            orders = {$commanderArray['orders']},
+            secs = {$commanderArray['secs']},
+            winstreak = {$commanderArray['winstreak']}
+            WHERE account_id = {$commander['account_id']};
+		";
+
 		try {
             db_query($query);
+            db_query($queryCommander);
         }
         catch (Exception $e)
         {
