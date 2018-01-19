@@ -50,7 +50,8 @@ function handle_end_game()
 	global $fields;
 	global $dbcon;
 
-	mysqli_begin_transaction($dbcon, MYSQLI_TRANS_START_READ_WRITE);
+
+	mysqli_begin_transaction($dbcon, MYSQLI_TRANS_START_WITH_CONSISTENT_SNAPSHOT);
 
 	$match_id = intval(post_input("match_id"));
 	$map = post_input("map");
@@ -59,6 +60,8 @@ function handle_end_game()
     $player_stats = post_serialized("player_stats");
     $commander_stats = post_serialized("commander_stats");
     $winner_id = 0;
+
+    header("HTTP/1.1 200 OK");
 	
 	/* Insert match */
 	$query = "
