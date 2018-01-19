@@ -60,8 +60,6 @@ function handle_end_game()
     $player_stats = post_serialized("player_stats");
     $commander_stats = post_serialized("commander_stats");
     $winner_id = 0;
-
-    header("HTTP/1.1 200 OK");
 	
 	/* Insert match */
 	$query = "
@@ -86,6 +84,14 @@ function handle_end_game()
 	$teams = post_serialized("team");
 	$team_ids = array();
 	foreach ($teams as $index => $team) {
+        if ($team['race'] == 'H')
+        {
+            $team['race'] = 1;
+        }
+        else
+        {
+            $team['race'] = 2;
+        }
         $query = "
 			INSERT INTO
 				teams
@@ -103,7 +109,7 @@ function handle_end_game()
             error_log($e, 3, '/var/tmp/ton.log');
         }
 
-        if ($team['race'] == 'H' && $winner == 1 || $team['race'] == 'B' && $winner == 2) //try this lead
+        if ($team['race'] == $winner)
         {
             $winner_id = $team_ids[$index];
         }
@@ -142,7 +148,7 @@ function handle_end_game()
             }
 		}
 
-		if($player['team'] == $winner_id)
+		if($team_id == $winner_id)
         {
             $playerArray['wins'] = $playerArray['wins'] + 1;
         } else {
@@ -206,7 +212,7 @@ function handle_end_game()
             }
 		}
 
-        if($commander['c_team'] == $winner_id)
+        if($team_id == $winner_id)
         {
             $commanderArray['wins'] = $commanderArray['wins'] + 1;
         } else {
