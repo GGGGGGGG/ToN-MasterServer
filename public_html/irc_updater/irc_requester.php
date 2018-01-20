@@ -55,7 +55,7 @@ function handle_auth()
     $cookie = md5(uniqid(rand(), true));
     $data["cookie"] = $cookie;
 
-    $pquery = "UPDATE users SET cookie='{$cookie}' WHERE username='{$nickname}'";
+    $pquery = "UPDATE users SET cookie='{$cookie}', updated_at = NOW() WHERE username='{$nickname}'";
     db_query($pquery);
 
     //everyone is prime
