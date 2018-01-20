@@ -2,6 +2,8 @@
 
 include("../common/lib.php");
 
+calculate_sf();
+
 function calculate_sf()
 {
     global $dbcon;
@@ -20,7 +22,7 @@ function calculate_sf()
         $result = mysqli_query($dbcon, $query);
         $sf = mysqli_fetch_assoc($result);
 
-        $query = "UPDATE playerstats SET sf='{$sf['sf_avg']}' WHERE id='{$player}'";
+        $query = "UPDATE playerinfos SET sf='{$sf['sf_avg']}' WHERE id='{$player}'";
         mysqli_query($dbcon, $query);
     }
 }
