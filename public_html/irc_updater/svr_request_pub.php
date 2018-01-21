@@ -33,7 +33,11 @@ function handle_set_online()
     global $dbcon;
     $data = array();
 
-	if(server_auth()) {
+    $login = post_input('login');
+	$pass = post_input('pass');
+
+	if(server_auth($login, $pass))
+	{
         /* Sanitize input */
         $ip = $_SERVER["REMOTE_ADDR"];
         $port = intval(post_input("port"));
@@ -86,7 +90,11 @@ function handle_set_online()
 function handle_set_online_ids()
 {
 	global $dbcon;
-	if (server_auth()) {
+	$login = post_input('login');
+	$pass = post_input('pass');
+
+	if(server_auth($login, $pass))
+	{
         /* Update number of connections */
         $num_conn = mysqli_real_escape_string($dbcon, intval(post_input("num_conn")));
         $login = mysqli_real_escape_string($dbcon, post_input("login"));
@@ -106,7 +114,11 @@ function handle_shutdown()
 {
 	global $dbcon;
 
-	if (server_auth()) {
+	$login = post_input('login');
+	$pass = post_input('pass');
+
+	if(server_auth($login, $pass))
+	{
         /* Remove server from list */
         $id = intval(post_input("server_id"));
         $query = "
@@ -194,13 +206,14 @@ function handle_auth()
 {
 	$data = array();
 	global $dbcon;
+	$login = post_input('login');
+	$pass = post_input('pass');
 
-	if(server_auth())
+	if(server_auth($login, $pass))
 	{
 		/* temp measure to get server id, it's currently not sent by the game server on post.
 		*  it's only sending login, pass, type, port, map and the account ids of the clients on the server.
 		*/
-		$login = post_input('login');
 		$query = "SELECT id from servers WHERE login = '{$login}'";
 		$result = mysqli_query($dbcon, $query);
 		$row = mysqli_fetch_assoc($result);
@@ -223,46 +236,6 @@ function handle_auth()
 
 	return $data;
 
-}
-
-function server_auth()
-{
-    global $dbcon;
-
-    $login = post_input('login');
-    $pass = post_input('pass');
-
-    $query = "
-		SELECT 
-			username AS nickname,
-			id AS account_id,
-			permissions,
-			password AS passwordhash
-		FROM 
-			users
-		WHERE 
-			username = '{$login}'
-		AND 
-			permissions = 1";
-
-    $result = mysqli_query($dbcon, $query);
-    $data = mysqli_fetch_assoc($result);
-
-    /* verify password */
-    $passwordhash = $data['passwordhash'];
-    $authSuccess = password_verify($pass, $passwordhash);
-    if (!$authSuccess) {
-        return 0;
-    } else {
-        $query = "SELECT banneduntil from bans WHERE account_id = {$data['account_id']} AND banneduntil > NOW()";
-        $result = mysqli_query($dbcon, $query);
-
-        if(mysqli_num_rows($result) > 0)
-        {
-            return 0;
-        }
-        return 1;
-    }
 }
 
 ?>

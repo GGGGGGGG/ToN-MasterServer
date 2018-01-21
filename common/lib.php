@@ -156,6 +156,36 @@ function dispatch_request($valid_actions)
 	echo serialize($data);		
 }
 
+function server_auth($login, $pass)
+{
+    global $dbcon;
+
+    $query = "
+		SELECT 
+			username AS nickname,
+			id AS account_id,
+			permissions,
+			password AS passwordhash
+		FROM 
+			users
+		WHERE 
+			username = '{$login}'
+		AND 
+			permissions = 1";
+
+    $result = mysqli_query($dbcon, $query);
+    $data = mysqli_fetch_assoc($result);
+
+    /* verify password */
+    $passwordhash = $data['passwordhash'];
+    $authSuccess = password_verify($pass, $passwordhash);
+    if (!$authSuccess) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 /* Open database connection */
 db_open();
 

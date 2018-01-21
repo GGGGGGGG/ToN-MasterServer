@@ -42,27 +42,31 @@ $fields = array(
 );
 
 /* Dispatch request into handle function */
-dispatch_request(array("end_game"));
+dispatch_request(array("end_game", "replays"));
 
 /* Submit stats */
 function handle_end_game()
 {
-	global $fields;
-	global $dbcon;
+    $login = post_input('login');
+    $pass = post_input('pass');
+    if(server_auth($login, $pass))
+    {
+        global $fields;
+        global $dbcon;
 
 
-	mysqli_begin_transaction($dbcon, MYSQLI_TRANS_START_WITH_CONSISTENT_SNAPSHOT);
+        mysqli_begin_transaction($dbcon, MYSQLI_TRANS_START_WITH_CONSISTENT_SNAPSHOT);
 
-	$match_id = intval(post_input("match_id"));
-	$map = post_input("map");
-	$winner = intval(post_input("winner"));
-	$duration = post_input("time");
-    $player_stats = post_serialized("player_stats");
-    $commander_stats = post_serialized("commander_stats");
-    $winner_id = 0;
-	
-	/* Insert match */
-	$query = "
+        $match_id = intval(post_input("match_id"));
+        $map = post_input("map");
+        $winner = intval(post_input("winner"));
+        $duration = post_input("time");
+        $player_stats = post_serialized("player_stats");
+        $commander_stats = post_serialized("commander_stats");
+        $winner_id = 0;
+
+        /* Insert match */
+        $query = "
 		INSERT INTO
 			matches
 		SET
@@ -71,28 +75,23 @@ function handle_end_game()
 			`duration` = '{$duration}',
 			`winner` = {$winner}";
 
-	try
-    {
-        db_query($query);
-    } catch (Exception $e)
-    {
-        error_log($e, 3, '/var/tmp/ton.log');
-    }
+        try {
+            db_query($query);
+        } catch (Exception $e) {
+            error_log($e, 3, '/var/tmp/ton.log');
+        }
 
-	
-	/* Insert teams */
-	$teams = post_serialized("team");
-	$team_ids = array();
-	foreach ($teams as $index => $team) {
-        if ($team['race'] == 'H')
-        {
-            $team['race'] = 1;
-        }
-        else
-        {
-            $team['race'] = 2;
-        }
-        $query = "
+
+        /* Insert teams */
+        $teams = post_serialized("team");
+        $team_ids = array();
+        foreach ($teams as $index => $team) {
+            if ($team['race'] == 'H') {
+                $team['race'] = 1;
+            } else {
+                $team['race'] = 2;
+            }
+            $query = "
 			INSERT INTO
 				teams
 			SET
@@ -100,27 +99,24 @@ function handle_end_game()
 				`race` = '{$team['race']}',
 				`avg_sf` = {$team['avg_sf']},
 				`commander` = {$team['commander']}";
-		try
-        {
-            db_query($query);
-            $team_ids[$index] = mysqli_insert_id($dbcon);
-        } catch (Exception $e)
-        {
-            error_log($e, 3, '/var/tmp/ton.log');
+            try {
+                db_query($query);
+                $team_ids[$index] = mysqli_insert_id($dbcon);
+            } catch (Exception $e) {
+                error_log($e, 3, '/var/tmp/ton.log');
+            }
+
+            if ($team['race'] == $winner) {
+                $winner_id = $team_ids[$index];
+            }
+
         }
 
-        if ($team['race'] == $winner)
-        {
-            $winner_id = $team_ids[$index];
-        }
+        /* Insert player stats */
+        foreach ($player_stats as $player) {
+            $team_id = $team_ids[$player['team']];
 
-	}
-
-	/* Insert player stats */
-	foreach ($player_stats as $player) {
-		$team_id = $team_ids[$player['team']];
-
-		$query = "
+            $query = "
 			INSERT INTO
 				actionplayers
 			SET
@@ -128,34 +124,33 @@ function handle_end_game()
 				`match` = {$match_id},
 				`team` = {$team_id}";
 
-		$queryPlayer = "SELECT * FROM
+            $queryPlayer = "SELECT * FROM
 		playerstats
 		WHERE account_id = {$player['account_id']}";
-        $result = mysqli_query($dbcon, $queryPlayer);
-        $playerArray = mysqli_fetch_assoc($result);
+            $result = mysqli_query($dbcon, $queryPlayer);
+            $playerArray = mysqli_fetch_assoc($result);
 
 
-		//we have to calculate sf ourselves, client sends back the sf account instead
-		$player['sf'] = $player['exp']/($player['secs']/60);
+            //we have to calculate sf ourselves, client sends back the sf account instead
+            $player['sf'] = $player['exp'] / ($player['secs'] / 60);
 
-		
-		// stats fields
-		foreach ($fields['action'] as $field) {
-			$query .= ", `{$field}` = '{$player[$field]}'";
-			//those fields are not part of the playerArray
-			if($field != 'ip' || $field != 'sf' || $field != 'end_status') {
-                $playerArray[$field] = $playerArray[$field] + $player[$field];
+
+            // stats fields
+            foreach ($fields['action'] as $field) {
+                $query .= ", `{$field}` = '{$player[$field]}'";
+                //those fields are not part of the playerArray
+                if ($field != 'ip' || $field != 'sf' || $field != 'end_status') {
+                    $playerArray[$field] = $playerArray[$field] + $player[$field];
+                }
             }
-		}
 
-		if($team_id == $winner_id)
-        {
-            $playerArray['wins'] = $playerArray['wins'] + 1;
-        } else {
-		    $playerArray['losses'] = $playerArray['losses'] + 1;
-        }
+            if ($team_id == $winner_id) {
+                $playerArray['wins'] = $playerArray['wins'] + 1;
+            } else {
+                $playerArray['losses'] = $playerArray['losses'] + 1;
+            }
 
-		$queryPlayer = "UPDATE
+            $queryPlayer = "UPDATE
             playerstats
             SET 
             wins = {$playerArray['wins']},
@@ -174,51 +169,48 @@ function handle_end_game()
             WHERE account_id = {$player['account_id']};
 		";
 
-		try
-        {
-            db_query($query);
-            db_query($queryPlayer);
-        } catch (Exception $e)
-        {
-            error_log($e, 3, '/var/tmp/ton.log');
+            try {
+                db_query($query);
+                db_query($queryPlayer);
+            } catch (Exception $e) {
+                error_log($e, 3, '/var/tmp/ton.log');
+            }
+
+
         }
-		
 
-	}
-	
-	/* Insert commander stats */
-	foreach ($commander_stats as $commander) {
-		$team_id = $team_ids[$commander['c_team']];
+        /* Insert commander stats */
+        foreach ($commander_stats as $commander) {
+            $team_id = $team_ids[$commander['c_team']];
 
-        $queryCommander = "SELECT * FROM
+            $queryCommander = "SELECT * FROM
 		commanderstats
 		WHERE account_id = {$commander['account_id']}";
-        $result = mysqli_query($dbcon, $queryCommander);
-        $commanderArray = mysqli_fetch_assoc($result);
-		
-		$query = "
+            $result = mysqli_query($dbcon, $queryCommander);
+            $commanderArray = mysqli_fetch_assoc($result);
+
+            $query = "
 			INSERT INTO
 				commanders
 			SET
 				`user` = {$commander['account_id']},
 				`match` = {$match_id},
 				`team` = {$team_id}";
-		
-		// stats fields
-		foreach ($fields['commander'] as $name => $target) {
-			$query .= ", `{$target}` = '{$commander[$name]}'";
-            if($target != 'ip' || $target != 'sf' || $target != 'end_status') {
-                $commanderArray[$target] = $commanderArray[$target] + $commander[$name];
-            }
-		}
 
-        if($team_id == $winner_id)
-        {
-            $commanderArray['wins'] = $commanderArray['wins'] + 1;
-        } else {
-            $commanderArray['losses'] = $commanderArray['losses'] + 1;
-        }
-        $queryCommander = "UPDATE
+            // stats fields
+            foreach ($fields['commander'] as $name => $target) {
+                $query .= ", `{$target}` = '{$commander[$name]}'";
+                if ($target != 'ip' || $target != 'sf' || $target != 'end_status') {
+                    $commanderArray[$target] = $commanderArray[$target] + $commander[$name];
+                }
+            }
+
+            if ($team_id == $winner_id) {
+                $commanderArray['wins'] = $commanderArray['wins'] + 1;
+            } else {
+                $commanderArray['losses'] = $commanderArray['losses'] + 1;
+            }
+            $queryCommander = "UPDATE
             commanderstats
             SET 
             wins = {$commanderArray['wins']},
@@ -239,21 +231,37 @@ function handle_end_game()
             WHERE account_id = {$commander['account_id']};
 		";
 
-		try {
-            db_query($query);
-            db_query($queryCommander);
+            try {
+                db_query($query);
+                db_query($queryCommander);
+            } catch (Exception $e) {
+                error_log($e, 3, '/var/tmp/ton.log');
+            }
         }
-        catch (Exception $e)
-        {
-            error_log($e, 3, '/var/tmp/ton.log');
-        }
-	}
 
-	mysqli_commit($dbcon);
+        mysqli_commit($dbcon);
 
-	mysqli_close($dbcon);
+        mysqli_close($dbcon);
+    }
 		
 	return array();
 }
 
+function handle_replays()
+{
+    $post = file_get_contents("php://input");
+
+    $data = json_decode($post);
+
+    foreach($data['replay'] as $replay)
+    {
+        $login = $replay['login'];
+        $pass = $replay['pass'];
+        if(server_auth($login, $pass)) {
+            $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/replays/' . $replay['id'] . '.s2r', 'w');
+            $content = base64_decode($replay['content']);
+            fwrite($file, $content);
+        }
+    }
+}
 ?>
