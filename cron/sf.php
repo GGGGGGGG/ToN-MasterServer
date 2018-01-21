@@ -13,16 +13,16 @@ function calculate_sf()
 
     while($row = mysqli_fetch_array($result))
     {
-        $players = $row;
+        $players[] = $row;
     }
 
     foreach($players as $player)
     {
-        $query = "SELECT AVG(sf) as sf_avg from actionplayers where user = {$player}";
+        $query = "SELECT AVG(sf) as sf_avg from actionplayers where user = {$player['id']}";
         $result = mysqli_query($dbcon, $query);
         $sf = mysqli_fetch_assoc($result);
 
-        $query = "UPDATE playerinfos SET sf='{$sf['sf_avg']}' WHERE id='{$player}'";
+        $query = "UPDATE playerinfos SET sf='{$sf['sf_avg']}' WHERE account_id='{$player['id']}'";
         mysqli_query($dbcon, $query);
     }
 }
