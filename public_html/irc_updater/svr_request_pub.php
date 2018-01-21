@@ -38,29 +38,30 @@ function handle_set_online()
 
 	if(server_auth($login, $pass))
 	{
-        /* Sanitize input */
         $ip = $_SERVER["REMOTE_ADDR"];
         $port = intval(post_input("port"));
-        $num_conn = intval(post_input("num_conn"));
-        $max_conn = intval(post_input("num_max"));
-        $name = post_input("name");
-        $desc = post_input("desc");
-        $status = post_input("status");
-        $minkarma = post_input("minkarma");
-        $location = post_input("location");
-        $cgt = post_input("cgt");
-        $next_map = post_input("next_map");
-        $map = post_input("map");
-        $login = post_input("login");
-        $pass = post_input("pass");
-        $minlevel = intval(post_input("minlevel"));
-        $maxlevel = intval(post_input("maxlevel"));
-        /* authenticate server */
+        /* Sanitize input */
+        if($port != 0) {
+            $num_conn = intval(post_input("num_conn"));
+            $max_conn = intval(post_input("num_max"));
+            $name = post_input("name");
+            $desc = post_input("desc");
+            $status = post_input("status");
+            $minkarma = post_input("minkarma");
+            $location = post_input("location");
+            $cgt = post_input("cgt");
+            $next_map = post_input("next_map");
+            $map = post_input("map");
+            $login = post_input("login");
+            $pass = post_input("pass");
+            $minlevel = intval(post_input("minlevel"));
+            $maxlevel = intval(post_input("maxlevel"));
+            /* authenticate server */
 
-        $official = 0;
+            $official = 0;
 
-        /* Create in database */
-        $query = "
+            /* Create in database */
+            $query = "
 		INSERT INTO servers SET 
 			official = '$official', id = DEFAULT, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', login = '{$login}', description = '$desc', minlevel = $minlevel,
@@ -70,17 +71,18 @@ function handle_set_online()
 			login = '{$login}', description = '$desc', minlevel = $minlevel, 
 			maxlevel = $maxlevel, updated = NOW(), online = 1";
 
-        mysqli_query($dbcon, $query);
+            mysqli_query($dbcon, $query);
 
 
-        /* Send id in answer */
-        $id = mysqli_insert_id($dbcon);
-        $data = array(
-            "acct_id" => $id,
-            "svr_id" => $id,
-            "set_online" => 3,
-            "UPD" => 11,
-            "reservation" => -1);
+            /* Send id in answer */
+            $id = mysqli_insert_id($dbcon);
+            $data = array(
+                "acct_id" => $id,
+                "svr_id" => $id,
+                "set_online" => 3,
+                "UPD" => 11,
+                "reservation" => -1);
+        }
     }
 
 	return $data;
