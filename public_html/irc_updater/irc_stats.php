@@ -21,6 +21,12 @@ $fields = array(
 		'secs',
 		'end_status',
 		'sf',
+		//'auto_win', //unk01
+		//'rec_stats', //unk02
+		//'malphas', //unk03
+		//'malphas', //unk04
+		//'revenant', //unk05
+		// 'devourer', //unk06
 		'ip'
 	),
 	'commander' => array(
@@ -36,6 +42,7 @@ $fields = array(
 		'c_orders' => 'orders',
 		'c_secs' => 'secs',
 		'c_end_status' => 'end_status',
+		//'c_auto_win' => 'auto_win', //unk01
 		'sf' => 'sf',
 		'ip' => 'ip'
 	)
@@ -165,6 +172,9 @@ function handle_end_game()
             bdmg = {$playerArray['bdmg']},
             npc = {$playerArray['npc']},
             hp_healed = {$playerArray['hp_healed']},
+            res = {$playerArray['res']},
+            gold = {$playerArray['gold']},
+            hp_repaired = {$playerArray['hp_repaired']},
             secs = {$playerArray['secs']}
             WHERE account_id = {$player['account_id']};
 		";
