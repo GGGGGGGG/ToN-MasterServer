@@ -251,9 +251,11 @@ function handle_end_game()
 
         mysqli_commit($dbcon);
 
+        sf($player_stats);
+
         mysqli_close($dbcon);
 
-        sf($player_stats);
+
     }
 		
 	return array();
