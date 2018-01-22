@@ -50,6 +50,8 @@ function handle_auth()
         return array("error" => "You're banned until ". $data['banneduntil']);
     }
 
+    //everyone is prime
+    $data["account_type"] = 1;
 
     /* generate cookie for user and add to DB */
     $cookie = md5(uniqid(rand(), true));
@@ -58,8 +60,6 @@ function handle_auth()
     $pquery = "UPDATE users SET cookie='{$cookie}', updated_at = NOW() WHERE username='{$nickname}'";
     db_query($pquery);
 
-    //everyone is prime
-    $data["account_type"] = 1;
 
     /* Buddy list */
     $query = "
@@ -145,12 +145,11 @@ function handle_get_all_stats()
     $data = array();
     foreach ($account_ids as $account_id) {
         $query = "SELECT 
-            overall_r, sf, lf, clans.*, level, karma, playerstats.*, commanderstats.* 
-            FROM playerinfos, clans, playerstats, commanderstats 
+            overall_r, sf, lf, clans.*, level, karma, playerstats.*
+            FROM playerinfos, clans, playerstats
             WHERE playerinfos.account_id = {$account_id} 
             AND playerinfos.clan_id = clans.id 
-            AND playerstats.account_id = playerinfos.account_id
-            AND playerinfos.account_id = commanderstats.account_id";
+            AND playerstats.account_id = playerinfos.account_id";
         $result = mysqli_query($dbcon, $query);
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
@@ -304,9 +303,9 @@ function handle_cr_vote()
 
 function handle_upd_karma()
 {
-    $account_id = post_input('account_id');
-    $target_id = post_input('target_id');
-    $match_id = post_input('match_id');
+    $account_id = intval(post_input('account_id'));
+    $target_id = intval(post_input('target_id'));
+    $match_id = intval(post_input('match_id'));
     $do = post_input('do');
     $reason = post_input('reason');
 
