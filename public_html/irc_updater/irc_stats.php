@@ -151,7 +151,7 @@ function handle_end_game()
                 }
             }
 
-            if ($team_id == $winner_id) {
+            if ($team_id == $winner_id && $player['end_status'] == 1) {
                 $playerArray['wins'] = $playerArray['wins'] + 1;
             } else {
                 $playerArray['losses'] = $playerArray['losses'] + 1;
@@ -215,7 +215,7 @@ function handle_end_game()
                 }
             }
 
-            if ($team_id == $winner_id) {
+            if ($team_id == $winner_id && $commander['c_end_status'] == 1) {
                 $commanderArray['wins'] = $commanderArray['wins'] + 1;
             } else {
                 $commanderArray['losses'] = $commanderArray['losses'] + 1;
