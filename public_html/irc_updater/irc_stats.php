@@ -242,6 +242,8 @@ function handle_end_game()
         mysqli_commit($dbcon);
 
         mysqli_close($dbcon);
+
+        sf($player_stats);
     }
 		
 	return array();
@@ -262,6 +264,21 @@ function handle_replays()
             $content = base64_decode($replay['content']);
             fwrite($file, $content);
         }
+    }
+}
+
+function sf(array $players)
+{
+    global $dbcon;
+
+    foreach($players as $player)
+    {
+        $query = "SELECT AVG(sf) as sf_avg from actionplayers where user = {$player['account_id']}";
+        $result = mysqli_query($dbcon, $query);
+        $sf = mysqli_fetch_assoc($result);
+
+        $query = "UPDATE playerinfos SET sf='{$sf['sf_avg']}' WHERE account_id='{$player['account_id']}'";
+        mysqli_query($dbcon, $query);
     }
 }
 ?>

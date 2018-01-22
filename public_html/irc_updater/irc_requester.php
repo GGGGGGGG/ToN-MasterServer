@@ -304,13 +304,29 @@ function handle_cr_vote()
 
 function handle_upd_karma()
 {
-    $k['account_id'] = post_input('account_id');
-    $k['target_id'] = post_input('target_id');
-    $k['match_id'] = post_input('match_id');
-    $k['do'] = post_input('do');
-    $k['reason'] = post_input('reason');
+    $account_id = post_input('account_id');
+    $target_id = post_input('target_id');
+    $match_id = post_input('match_id');
+    $do = post_input('do');
+    $reason = post_input('reason');
 
-    return array('karma' => 'OK');
+    /* TODO: Check if user was in this game */
+    $query = "
+        INSERT INTO
+              karmas
+        SET
+            account_id = {$account_id}
+            target_id = {$target_id},
+            match_id = {$match_id},
+            do = {$do},
+            reason = {$reason}";
+
+    try {
+        db_query($query);
+        return array("karma" => "OK");
+    } catch (Exception $e) {
+        return array("karma" => "ERROR");
+    }
 }
 
 ?>
