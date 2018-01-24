@@ -159,7 +159,7 @@ function handle_c_conn()
 		INSERT INTO
 			players
 		SET
-			user = {$account_id},
+			account_id = {$account_id},
 			server = {$server_id},
 			updated = NOW(),
 			online = 1
@@ -192,7 +192,7 @@ function handle_c_disc()
 			online = 0,
 			updated = NOW()
 		WHERE
-			user = {$account_id}";
+			account_id = {$account_id}";
 
 	db_query($query);
 
