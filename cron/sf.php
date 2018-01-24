@@ -18,7 +18,7 @@ function calculate_sf()
 
     foreach($players as $player)
     {
-        $query = "SELECT AVG(sf) as sf_avg from actionplayers where user = {$player['id']}";
+        $query = "SELECT AVG(sf) as sf_avg from actionplayers where account_id = {$player['id']}";
         $result = mysqli_query($dbcon, $query);
         $sf = mysqli_fetch_assoc($result);
 

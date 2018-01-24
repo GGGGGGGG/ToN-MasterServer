@@ -98,6 +98,7 @@ function handle_end_game()
                 } else {
                     $team['race'] = 2;
                 }
+
                 $query = "
 			INSERT INTO
 				teams
@@ -127,9 +128,9 @@ function handle_end_game()
 			INSERT INTO
 				actionplayers
 			SET
-				`user` = {$player['account_id']},
-				`match` = {$match_id},
-				`team` = {$team_id}";
+				`account_id` = {$player['account_id']},
+				`match_id` = {$match_id},
+				`team_id` = {$team_id}";
 
                 $queryPlayer = "
                     SELECT * FROM
@@ -180,8 +181,7 @@ function handle_end_game()
                         hp_repaired = {$playerArray['hp_repaired']},
                         secs = {$playerArray['secs']}
                     WHERE 
-                        account_id = {$player['account_id']};
-		";
+                        account_id = {$player['account_id']};";
 
                 try {
                     db_query($query);
@@ -209,9 +209,9 @@ function handle_end_game()
 			        INSERT INTO
 				        commanders
 			        SET
-				      `user` = {$commander['account_id']},
-				      `match` = {$match_id},
-				      `team` = {$team_id}";
+				      `account_id` = {$commander['account_id']},
+				      `match_id` = {$match_id},
+				      `team_id` = {$team_id}";
 
                 // stats fields
                 foreach ($fields['commander'] as $name => $target) {
@@ -246,8 +246,7 @@ function handle_end_game()
                         secs = {$commanderArray['secs']},
                         winstreak = {$commanderArray['winstreak']}
                     WHERE 
-                        account_id = {$commander['account_id']};
-		";
+                        account_id = {$commander['account_id']};";
 
                 try {
                     db_query($query);
@@ -291,7 +290,7 @@ function sf(array $players)
     global $dbcon;
 
     foreach ($players as $player) {
-        $query = "SELECT AVG(sf) as sf_avg from actionplayers where user = {$player['account_id']}";
+        $query = "SELECT AVG(sf) as sf_avg from actionplayers where account_id = {$player['account_id']}";
         $result = mysqli_query($dbcon, $query);
         $sf = mysqli_fetch_assoc($result);
 

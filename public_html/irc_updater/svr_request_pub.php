@@ -52,8 +52,6 @@ function handle_set_online()
             $cgt = post_input("cgt");
             $next_map = post_input("next_map");
             $map = post_input("map");
-            $login = post_input("login");
-            $pass = post_input("pass");
             $minlevel = intval(post_input("minlevel"));
             $maxlevel = intval(post_input("maxlevel"));
             /* authenticate server */
