@@ -61,13 +61,13 @@ function handle_set_online()
             /* Create in database */
             $query = "
 		INSERT INTO servers SET 
-			official = '$official', id = DEFAULT, ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
-			name = '$name', login = '{$login}', description = '$desc', minlevel = $minlevel,
-			maxlevel = $maxlevel, updated = NOW(), online = 1
+			official = {$official}, id = DEFAULT, ip = '{$ip}', port = {$port}, num_conn = {$num_conn}, max_conn = {$max_conn},
+			name = '{$name}', login = '{$login}', description = '{$desc}', minlevel = {$minlevel},
+			maxlevel = {$maxlevel}, status = {$status}, next_map = {$next_map}, map = {$map}, updated = NOW(), online = 1
 		ON DUPLICATE KEY UPDATE
-			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
-			login = '{$login}', description = '$desc', minlevel = $minlevel, 
-			maxlevel = $maxlevel, updated = NOW(), online = 1";
+			ip = '{$ip}', port = {$port}, num_conn = {$num_conn}, max_conn = {$max_conn}, name = '{$name}', 
+			login = '{$login}', description = '{$desc}', minlevel = {$minlevel}, 
+			maxlevel = {$maxlevel}, status = {$status}, next_map = {$next_map}, map = {$map}, updated = NOW(), online = 1";
 
             mysqli_query($dbcon, $query);
 
