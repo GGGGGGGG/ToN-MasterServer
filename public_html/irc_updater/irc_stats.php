@@ -258,7 +258,9 @@ function handle_end_game()
 
             mysqli_commit($dbcon);
 
-            sf($player_stats);
+            update_sf($player_stats);
+
+            update_ap($player_stats, $commander_stats);
 
             mysqli_close($dbcon);
         }
@@ -285,7 +287,7 @@ function handle_replays()
     }
 }
 
-function sf(array $players)
+function update_sf(array $players)
 {
     global $dbcon;
 
@@ -296,6 +298,42 @@ function sf(array $players)
 
         $query = "UPDATE playerinfos SET sf='{$sf['sf_avg']}' WHERE account_id='{$player['account_id']}'";
         mysqli_query($dbcon, $query);
+    }
+}
+
+function update_ap(array $players, array $commanders)
+{
+    global $dbcon;
+
+    foreach ($players as $player) {
+        $query = "SELECT SUM(points) as ap_sum FROM achievements JOIN badges on achievement_id = id WHERE account_id = {$player['account_id']}";
+        $result = mysqli_query($dbcon, $query);
+        $ap = mysqli_fetch_assoc($result);
+
+        $query = "UPDATE playerinfos SET ap='{$ap['ap_sum']}' WHERE account_id='{$player['account_id']}'";
+        mysqli_query($dbcon, $query);
+    }
+
+    foreach ($commanders as $commander) {
+        $query = "SELECT SUM(points) as ap_sum FROM achievements JOIN badges on achievement_id = id WHERE account_id = {$commander['account_id']}";
+        $result = mysqli_query($dbcon, $query);
+        $ap = mysqli_fetch_assoc($result);
+
+        $query = "UPDATE playerinfos SET ap='{$ap['ap_sum']}' WHERE account_id='{$commander['account_id']}'";
+        mysqli_query($dbcon, $query);
+    }
+}
+
+function trigger_ap(array $players, array $commanders)
+{
+    global $dbcon;
+
+    foreach ($players as $player) {
+        //do something
+    }
+
+    foreach (commanders as $commander){
+        //do something
     }
 }
 
