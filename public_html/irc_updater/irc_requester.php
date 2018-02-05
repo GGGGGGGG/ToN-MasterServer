@@ -78,7 +78,7 @@ function handle_auth()
 			ON
 				buddies.target_id = users.id
 			WHERE
-				users.source_id = {$data['account_id']}";
+				buddies.source_id = {$data['account_id']}";
     $result = mysqli_query($dbcon, $query);
 
     if (mysqli_num_rows($result) == 0) {
