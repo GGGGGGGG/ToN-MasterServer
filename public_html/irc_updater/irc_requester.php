@@ -84,11 +84,18 @@ function handle_auth()
     if (mysqli_num_rows($result) == 0) {
         $data["buddy"] = array("error" => "No buddies found.");
     } else {
-        $data["buddy"] = array();
+        $data["buddy_list"] = array();
         while ($row = mysqli_fetch_assoc($result)) {
-            $data["buddy"][$row["buddy_id"]] = $row;
+            $data["buddy_list"][$data['account_id']][$row["buddy_id"]]['buddy_id'] = $row['buddy_id'];
+            $data["buddy_list"][$data['account_id']][$row["buddy_id"]]['nickname'] = $row['nickname'];
+            $data["buddy_list"][$data['account_id']][$row["buddy_id"]]['note'] = $row['note'];
+            $data["buddy_list"][$data['account_id']][$row["buddy_id"]]['clan_name'] = $row['clan_name'];
+            $data["buddy_list"][$data['account_id']][$row["buddy_id"]]['clan_tag'] = $row['clan_tag'];
+            $data["buddy_list"][$data['account_id']][$row["buddy_id"]]['clan_img'] = $row['clan_img'];
+            $data["buddy_list"][$data['account_id']][$row["buddy_id"]]['avatar'] = $row['avatar'];
         }
     }
+
 
 
     // stats
@@ -97,13 +104,9 @@ function handle_auth()
     $data["player_stats"] = array();
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $data["player_stats"][$row["account_id"]] = $row;
+            $data["player_stats"][$data["account_id"]] = $row;
         }
     }
-
-    /* Stats */
-    //$data["player_stats"] = array($data['account_id'] => array());
-    $data["ranked_stats"] = array($data['account_id'] => array());
 
     return $data;
 
