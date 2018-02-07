@@ -94,16 +94,14 @@ function handle_auth()
     // stats
     $query = "SELECT overall_r, sf, lf, level, clans.*, karma FROM playerinfos JOIN clans ON playerinfos.clan_id = clans.id WHERE playerinfos.account_id = {$data['account_id']}";
     $result = db_query($query);
-    $data["player_stats"] = array();
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-            $data["player_stats"][$row["account_id"]] = $row;
+            $data["ranked_stats"][$row["account_id"]] = $row;
         }
     }
 
     /* Stats */
     //$data["player_stats"] = array($data['account_id'] => array());
-    $data["ranked_stats"] = array($data['account_id'] => array());
 
     return $data;
 
